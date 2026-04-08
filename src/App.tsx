@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { HomePage } from "./features/HomePage";
-// import { TimelinePage } from './features/timeline/TimelinePage'
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
@@ -8,6 +7,8 @@ import { ResetPasswordPage } from "./features/auth/ResetPasswordPage";
 import { LoginPage } from "./features/auth/LoginPage";
 import { SignUpPage } from "./features/auth/SignUpPage";
 import { UpdatePasswordPage } from "./features/auth/UpdatePasswordPage";
+import { TimelinePage } from "./features/timeline/TimelinePage";
+import { Layout } from "./components/layout/Layout";
 
 // 未ログインならloginへリダイレクト
 const ProtectedRoute = ({
@@ -56,7 +57,7 @@ export const App = () => {
 
   return (
     <Routes>
-      {/* 未ログインのみアクセス可 */}
+
       <Route
         path="/login"
         element={
@@ -83,24 +84,26 @@ export const App = () => {
       />
       <Route path="/update-password" element={<UpdatePasswordPage />} />
 
-      {/* ログイン済みのみアクセス可 */}
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute session={session}>
-            <HomePage session={session!} />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* <Route
-        path="/timeline"
-        element={
-          <ProtectedRoute session={session}>
-            <TimelinePage />
-          </ProtectedRoute>
-        }
-      /> */}
+      {/* 未ログインのみアクセス可 */}
+      <Route element={<Layout />}>
+              {/* ログイン済みのみアクセス可 */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute session={session}>
+              <HomePage session={session!} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/timeline"
+          element={
+            <ProtectedRoute session={session}>
+              <TimelinePage />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
 
       {/* それ以外はセッション状態に応じてリダイレクト */}
       <Route
