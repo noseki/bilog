@@ -22,8 +22,6 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
 ```
 
-注意: クライアント (`src/lib/supabase/client.ts`) は `VITE_SUPABASE_PUBLISHABLE_OR_ANON_KEY` を参照しているが、テンプレートは `VITE_SUPABASE_ANON_KEY` になっている。環境変数を追加する際はこの不整合に注意。
-
 ## アプリ概要
 
 **Bilog** は「自分の美容（髪型・ヘアカラー・ネイル等）の変遷を記録し、お金も管理する」アプリ。主なターゲットは10〜20代女性。
