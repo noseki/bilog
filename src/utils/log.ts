@@ -7,7 +7,7 @@ type Log = Tables<"logs">;
 export function groupLogsByMonth(logs: Log[]): [string, Log[]][] {
     const map: Record<string, Log[]> = {};
     for (const log of logs) {
-        const key = log.done_at.slice(0, 7); // "2025-12"
+        const key = log.done_at.slice(0, 7); // done_at "2026-04-03" → "2026-04" にする
         if (!map[key]) map[key] = [];
         map[key].push(log);
     }
@@ -30,3 +30,8 @@ export const CATEGORY_COLOR: Record<string, string> = {
     esthetic: "bg-green-100 text-green-700",
     medical: "bg-orange-100 text-orange-700",
 };
+
+// 月日フォーマットに変換する
+export function formatMonthDay(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }); // 例：2026/4/3日　→　4/3
+}
