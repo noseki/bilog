@@ -2,6 +2,14 @@
 
 このファイルは、Claude Code (claude.ai/code) がこのリポジトリで作業する際のガイドです。
 
+## セキュリティルール
+
+- `.env` ファイルは絶対に読み取らない（APIキー・パスワードが含まれる）
+- `git push --force` は実行しない
+- 外部通信（curl / wget）が必要な場合は、必ず理由を説明してからユーザーの許可を得る
+- `rm -rf` などの破壊的なファイル操作は実行しない
+- `src/` 以外のディレクトリ（特に設定ファイル）への書き込みは慎重に行う
+
 ## コマンド
 
 ```bash
@@ -9,6 +17,8 @@ npm run dev      # 開発サーバー起動 (Vite)
 npm run build    # 型チェック + 本番ビルド
 npm run lint     # ESLint
 npm run preview  # 本番ビルドのプレビュー
+make deploy      # 本番サイト（firebase hosting）へのビルド&デプロイ
+make test        # テスト手動実行
 ```
 
 テストランナーは未設定。
