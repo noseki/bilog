@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { HomePage } from "./features/HomePage";
+import { HomePage } from "./features/home/HomePage";
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
@@ -7,8 +7,10 @@ import { ResetPasswordPage } from "./features/auth/ResetPasswordPage";
 import { LoginPage } from "./features/auth/LoginPage";
 import { SignUpPage } from "./features/auth/SignUpPage";
 import { UpdatePasswordPage } from "./features/auth/UpdatePasswordPage";
-import { TimelinePage } from "./features/timeline/TimelinePage";
+import { LogTimelinePage } from "./features/log/LogTimelinePage";
 import { Layout } from "./components/layout/Layout";
+import { AddLogPage } from "./features/log/AddLogPage";
+import { LogDetailPage } from "./features/log/LogDetailPage";
 
 // 未ログインならloginへリダイレクト
 const ProtectedRoute = ({
@@ -39,11 +41,13 @@ export const App = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 初回マウント時にセッションを取得
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
 
+    // セッションの変化を監視（ログイン・ログアウト時に発火）
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) =>
@@ -57,7 +61,7 @@ export const App = () => {
 
   return (
     <Routes>
-
+      {/* 未ログインのみアクセス可 */}
       <Route
         path="/login"
         element={
@@ -84,22 +88,37 @@ export const App = () => {
       />
       <Route path="/update-password" element={<UpdatePasswordPage />} />
 
-      {/* 未ログインのみアクセス可 */}
-      <Route element={<Layout />}>
-              {/* ログイン済みのみアクセス可 */}
+      {/* ログイン済みのみアクセス可 */}
+      <Route element={<Layout session={session!} />}>
         <Route
           path="/home"
           element={
             <ProtectedRoute session={session}>
-              <HomePage session={session!} />
+              <HomePage />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/timeline"
+          path="/log-timeline"
           element={
             <ProtectedRoute session={session}>
-              <TimelinePage />
+              <LogTimelinePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/log-timeline/:id"
+          element={
+            <ProtectedRoute session={session}>
+              <LogDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-log"
+          element={
+            <ProtectedRoute session={session}>
+              <AddLogPage session={session!} />
             </ProtectedRoute>
           }
         />

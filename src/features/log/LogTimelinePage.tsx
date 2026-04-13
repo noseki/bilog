@@ -2,7 +2,7 @@ import { groupLogsByMonth } from "@/utils/log";
 import { useLogs } from "./useLogs";
 import { LogCard } from "./LogCard";
 
-export const TimelinePage = () => {
+export const LogTimelinePage = () => {
     const { data: logs, isLoading, isError } = useLogs();
 
     if (isLoading) return <p className="p-4 text-gray-500">読み込み中...</p>
