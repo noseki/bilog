@@ -2,6 +2,16 @@
 
 このファイルは、Claude Code (claude.ai/code) がこのリポジトリで作業する際のガイドです。
 
+## Environment
+- OS: macOS Tahoe
+- Runtime: Node.js 22 / npm
+- Framework: React 19
+- ライブラリ： React Hook Form, Zod, Tanstack Query
+- DB: Supabase (PostgreSQL)
+- デプロイ先: Firebase hosting
+- テスト：Vitest, React Testing Library
+- スタイリング：Tailwind CSS, shadcn/ui
+
 ## セキュリティルール
 
 - `.env` ファイルは絶対に読み取らない（APIキー・パスワードが含まれる）
@@ -20,8 +30,6 @@ npm run preview  # 本番ビルドのプレビュー
 make deploy      # 本番サイト（firebase hosting）へのビルド&デプロイ
 make test        # テスト手動実行
 ```
-
-テストランナーは未設定。
 
 ## 環境構築
 
@@ -44,11 +52,11 @@ VITE_SUPABASE_ANON_KEY=
 
 ### MVPロードマップ
 
-現在 **MVP1** から開発中。
+**MVP1** から順に開発中。
 
 | MVP | 内容 |
 |-----|------|
-| 1 | Supabase接続 & メール認証 / DB設計 / 記録一覧画面（タイムライン）/ デプロイ（Firebase Hosting）+ CI/CD（GitHub Actions）/ テスト |
+| 1 | Supabase接続 & メール認証(Supabase Auth) / DB設計 / 記録一覧画面（タイムライン）/ デプロイ（Firebase Hosting）+ CI/CD（GitHub Actions）/ テスト |
 | 2 | 記録追加・編集・削除画面（カテゴリ/日付/金額/メモ/サロン名/担当者名）/ 写真アップロード（Supabase Storage）/ テスト |
 | 3 | 記録詳細画面（ビフォーアフター）/ 同カテゴリ時系列比較ビュー / テスト |
 | 4 | 月の美容予算設定 / ホームに残予算・使用額・カテゴリ別グラフ表示 / 予算超過アラート / テスト |
@@ -56,7 +64,8 @@ VITE_SUPABASE_ANON_KEY=
 
 ### AI への依頼方針
 
-React・TypeScript の学習目的で開発しているため、**実装はユーザー自身が行う**。AIへの依頼はバグ修正とスタイリング（Tailwind / shadcn）を中心とする。
+React・TypeScript の学習目的で開発しているため、**実装はユーザー自身が行う**。
+AIへの依頼はバグ修正とスタイリング（Tailwind / shadcn）を中心とする。
 本アプリはスマホユーザー向けであるが、PCで見ても違和感のないスタイリングにすること。
 
 ---
