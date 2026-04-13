@@ -35,3 +35,9 @@ export const CATEGORY_COLOR: Record<string, string> = {
 export function formatMonthDay(dateStr: string): string {
     return new Date(dateStr).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }); // 例：2026/4/3日　→　4/3
 }
+
+// 日本時間の日付でYYYY-MM-DD形式にする
+export function formatLocalDate(dateStr: Date): string {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${dateStr.getFullYear()}-${pad(dateStr.getMonth() + 1)}-${pad(dateStr.getDate())}`;
+}

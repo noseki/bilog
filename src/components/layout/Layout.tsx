@@ -1,9 +1,10 @@
 import { Link, Outlet, useNavigate } from "react-router-dom"
-import { Button } from "../ui/button"
 import { useCallback } from "react";
 import { supabase } from "@/lib/supabase/client";
+import { Button } from "../ui/button";
+import type { Session } from "@supabase/supabase-js";
 
-export const Layout = () => {
+export const Layout = ({ session }: { session: Session }) => {
     const navigate = useNavigate();
 
     const onLogout = useCallback(async () => {
@@ -21,31 +22,35 @@ export const Layout = () => {
             <header className="bg-white shadow-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
-                        {/* ロゴ */}
-                        <Link to="/" className="flex items-center space-x-2">
-                            <span className="text-2xl font-bold text-indigo-600">
-                                Bilog
-                            </span>
-                        </Link>
+                        <div className="flex items-center space-x-16">
+                            {/* ロゴ */}
+                            <Link to="/" className="flex items-center space-x-2">
+                                <span className="text-2xl font-bold text-indigo-600">
+                                    Bilog
+                                </span>
+                            </Link>
 
-                        {/* ナビゲーション（スマホでは非表示） */}
-                        <nav className="hidden md:flex items-center space-x-8">
-                            <Link
-                                to="/timeline"
-                                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
-                            >
-                                記録一覧
-                            </Link>
-                            <Link
-                                to="/#"
-                                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
-                            >
-                                予算管理
-                            </Link>
-                        </nav>
+                            {/* ナビゲーション（スマホでは非表示） */}
+                            <nav className="hidden md:flex space-x-8">
+                                <Link
+                                    to="/log-timeline"
+                                    className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+                                >
+                                    記録一覧
+                                </Link>
+                                <Link
+                                    to="/#"
+                                    className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+                                >
+                                    予算管理
+                                </Link>
+                            </nav>
+                        </div>
+
 
                         {/* 右側のアクション */}
                         <div className="flex items-center space-x-4">
+                            <p className="hidden md:flex">{session.user.email}</p>
                             <Button onClick={onLogout}>ログアウト</Button>
                         </div>
                     </div>
