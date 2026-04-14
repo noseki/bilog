@@ -38,6 +38,7 @@ export const LoginPage = () => {
       });
       if (error) throw new Error();
     } catch (error) {
+      console.error(`LoginPage onSubmit Error: ${error}`);
       setError("メールアドレスまたはパスワードが正しくありません");
       // 成功時はApp.tsxのonAuthStateChangeが自動でリダイレクト
     }

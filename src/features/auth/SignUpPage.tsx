@@ -36,6 +36,7 @@ export const SignUpPage = () => {
             if (error) throw new Error();
             setIsComplete(true);
         } catch (error) {
+            console.error(`SignUpPage onSubmit Error: ${error}`);
             setError("登録に失敗しました。再度お試しください。");
         }
     };

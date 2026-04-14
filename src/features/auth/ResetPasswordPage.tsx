@@ -28,6 +28,7 @@ export const ResetPasswordPage = () => {
             if (error) throw new Error();
             setIsComplete(true);
         } catch (error) {
+            console.error(`ResetPasswordPage onSubmit Error: ${error}`);
             setError("メールの送信に失敗しました。再度お試しください。");
         }
     };
