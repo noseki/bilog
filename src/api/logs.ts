@@ -17,57 +17,105 @@ export const fetchLogs = async (userId: string) => {
     return data;
 };
 
-export const createLog = async ({
-        userId,
-        formData,
-        photoUrls,
-    }: {
-        userId: string;
-        formData: LogValues;
-        photoUrls: { before: string | null, after: string | null };
-    }): Promise<Log> => {
-        // salon_nameがあればsalonsテーブルにupsert（salon_idも取得）
-        let salonId: string | null = null;
-        if (formData.salon_name) {
-            const { data: salonData, error: salonError } = await supabase
-                .from("salons")
-                .upsert({ name: formData.salon_name, user_id: userId }, { onConflict: 'user_id, name' })
-                .select("id")
-                .single();
+type LogPayload = {
+    userId: string;
+    formData: LogValues;
+    photoUrls: { before: string | null; after: string | null };
+};
 
-            if (salonError) throw new Error(`insertSalon error: ${salonError.message}`);
-            salonId = salonData.id;
-        }
+// salon / staff の upsert を共通化
+async function upsertSalonAndStaff(userId: string, formData: LogValues): Promise<string | null> {
+    if (!formData.salon_name) return null;
 
-        // staff_nameおよびsalon_idがあればstaffsテーブルにupsert
-        if (formData.staff_name && salonId ) {
-            const { error: staffError } = await supabase
-                .from("staffs")
-                .upsert({ name: formData.staff_name, salon_id: salonId, user_id: userId }, { onConflict: "user_id, name, salon_id" });
+    const { data: salonsData, error: salonsError } = await supabase
+        .from("salons")
+        .upsert({ name: formData.salon_name, user_id: userId }, { onConflict: "user_id, name" })
+        .select("id")
+        .single();
+    if (salonsError) throw new Error(`upsertSalon error: ${salonsError.message}`);
 
-            if (staffError) throw new Error(`insertStaff error: ${staffError.message}`);
-        }
+    const salonId = salonsData.id;
+    if (formData.staff_name) {
+        const { error: staffsError } = await supabase
+            .from("staffs")
+            .upsert({ name: formData.staff_name, salon_id: salonId, user_id: userId }, { onConflict: "user_id, name, salon_id" });
+        if (staffsError) throw new Error(`upsertStaff error: ${staffsError.message}`);
+    }
+    return salonId;
+}
 
-        // logsテーブルにinsert
-        const { data: logData, error: logError } = await supabase
-            .from("logs")
-            .insert({
-                user_id: userId,
-                category: formData.category,
-                title: formData.title,
-                detail: formData.detail,
-                cost: formData.cost,
-                done_at: formatLocalDate(formData.done_at), // Date → "YYYY-MM-DD" 文字列に変換
-                salon_name: formData.salon_name,
-                staff_name: formData.staff_name,
-                before_photo_url: photoUrls.before,
-                after_photo_url: photoUrls.after,
-            })
-            .select()
-            .single();
+export const createLog = async ({ userId, formData, photoUrls }: LogPayload): Promise<Log> => {
+    await upsertSalonAndStaff(userId, formData);
 
-        if (logError) throw new Error(`insertLog error: ${logError.message}`);
-        return logData;
+    const { data, error } = await supabase
+        .from("logs")
+        .insert({
+            user_id: userId,
+            category: formData.category,
+            title: formData.title,
+            detail: formData.detail,
+            cost: formData.cost,
+            done_at: formatLocalDate(formData.done_at),
+            salon_name: formData.salon_name,
+            staff_name: formData.staff_name,
+            before_photo_url: photoUrls.before,
+            after_photo_url: photoUrls.after,
+        })
+        .select()
+        .single();
+
+    if (error) throw new Error(`createLog error: ${error.message}`);
+    return data;
+};
+
+export const updateLog = async ({ logId, userId, formData, photoUrls }: LogPayload & { logId: string }): Promise<Log> => {
+    await upsertSalonAndStaff(userId, formData);
+
+    const { data, error } = await supabase
+        .from("logs")
+        .update({
+            category: formData.category,
+            title: formData.title,
+            detail: formData.detail,
+            cost: formData.cost,
+            done_at: formatLocalDate(formData.done_at),
+            salon_name: formData.salon_name,
+            staff_name: formData.staff_name,
+            before_photo_url: photoUrls.before,
+            after_photo_url: photoUrls.after,
+        })
+        .eq("id", logId)
+        .select()
+        .single();
+
+    if (error) throw new Error(`updateLog error: ${error.message}`);
+    return data;
+};
+
+// 画像ファイルパスから有効なsigned URLを生成する
+async function toSignedUrl(path: string | null): Promise<string | null> {
+    if (!path) return null;
+    const { data, error } = await supabase.storage.from("images").createSignedUrl(path, 3600);
+    if (error) return null;
+    return data.signedUrl;
+}
+
+// 特定のid(logs.id)からlog情報を取得
+export const fetchLog = async (id: string) => {
+    const { data, error } = await supabase
+        .from("logs")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+    if (error) throw new Error(`fetchLog error: ${error.message}`);
+
+    // 表示用に新鮮なsignedURL（1時間有効）を生成して上書き
+    const [before, after] = await Promise.all([
+        toSignedUrl(data.before_photo_url),
+        toSignedUrl(data.after_photo_url),
+    ]);
+    return { ...data, before_photo_url: before, after_photo_url: after };
 }
 
 export const deleteLog = async (id: string) => {

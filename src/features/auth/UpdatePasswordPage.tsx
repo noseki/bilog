@@ -31,6 +31,7 @@ export const UpdatePasswordPage = () => {
         state: { referrer: "login" },
       });
     } catch (error) {
+      console.error(`UpdatePasswordPage onSubmit Error: ${error}`);
       setError("パスワードの更新に失敗しました。再度お試しください。");
     }
   };
