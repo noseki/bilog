@@ -1,9 +1,9 @@
 import { groupLogsByMonth } from "@/utils/log";
-import { useLogs } from "./useLogs";
+import { useFetchLogs } from "./useLogs";
 import { LogCard } from "./LogCard";
 
 export const LogTimelinePage = () => {
-    const { data: logs, isLoading, isError } = useLogs();
+    const { data: logs, isLoading, isError } = useFetchLogs();
 
     if (isLoading) return <p className="p-4 text-gray-500">読み込み中...</p>
     if (isError)   return <p className="p-4 text-red-500">データの取得に失敗しました</p>

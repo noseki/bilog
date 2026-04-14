@@ -11,6 +11,7 @@ import { LogTimelinePage } from "./features/log/LogTimelinePage";
 import { Layout } from "./components/layout/Layout";
 import { AddLogPage } from "./features/log/AddLogPage";
 import { LogDetailPage } from "./features/log/LogDetailPage";
+import { EditLogPage } from "./features/log/EditLogPage";
 
 // 未ログインならloginへリダイレクト
 const ProtectedRoute = ({
@@ -111,6 +112,14 @@ export const App = () => {
           element={
             <ProtectedRoute session={session}>
               <LogDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/log-timeline/:id/edit"
+          element={
+            <ProtectedRoute session={session}>
+              <EditLogPage session={session!} />
             </ProtectedRoute>
           }
         />

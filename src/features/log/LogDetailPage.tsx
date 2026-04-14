@@ -52,7 +52,7 @@ export const LogDetailPage = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigate(`/log-timeline/${id}/edit`)}>
                                 <PencilIcon />
                                 編集する
                             </DropdownMenuItem>

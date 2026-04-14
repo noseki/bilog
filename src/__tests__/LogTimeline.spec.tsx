@@ -67,7 +67,7 @@ describe("LogTimeline", () => {
 
   test("タイトル/カテゴリー/店舗名/担当者名/実施日/金額が表示されていること", async () => {
     mockFetchLogs.mockResolvedValue([{ ...baseMockLog }]);
-    render(<LogTimelinePage />); //　データをセットしてからレンダリング
+    render(<LogTimelinePage />); //データをセットしてからレンダリング
 
     expect(await screen.findByText("テストタイトル")).toBeInTheDocument();
     expect(screen.getByText("ネイル")).toBeInTheDocument();
