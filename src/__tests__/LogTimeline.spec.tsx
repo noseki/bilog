@@ -11,12 +11,12 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-// テスト用のダミーセッションを返す
+// テスト用のダミーユーザーを返す
 vi.mock("@/lib/supabase/client", () => ({
   supabase: {
     auth: {
-      getSession: vi.fn().mockResolvedValue({
-        data: { session: { user: { id: "test-user-id" } } },
+      getUser: vi.fn().mockResolvedValue({
+        data: { user: { id: "test-user-id" } },
       }),
     },
   },

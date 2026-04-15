@@ -2,9 +2,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useFetchLog } from "./useLogs";
 import { Button } from "@/components/ui/button";
 import { LogForm } from "./LogForm";
-import type { Session } from "@supabase/supabase-js";
 
-export const EditLogPage = ({ session }: { session: Session }) => {
+export const EditLogPage = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const { data, isLoading, isError } = useFetchLog(id!);
@@ -22,7 +21,6 @@ export const EditLogPage = ({ session }: { session: Session }) => {
                 ← 戻る
             </Button>
             <LogForm
-                session={session}
                 defaultValues={{
                     category: data.category,
                     title: data.title,

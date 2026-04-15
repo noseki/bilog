@@ -1,8 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { HomePage } from "./features/home/HomePage";
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabase/client";
-import type { Session } from "@supabase/supabase-js";
 import { ResetPasswordPage } from "./features/auth/ResetPasswordPage";
 import { LoginPage } from "./features/auth/LoginPage";
 import { SignUpPage } from "./features/auth/SignUpPage";
@@ -12,132 +9,74 @@ import { Layout } from "./components/layout/Layout";
 import { AddLogPage } from "./features/log/AddLogPage";
 import { LogDetailPage } from "./features/log/LogDetailPage";
 import { EditLogPage } from "./features/log/EditLogPage";
+import { useAuth } from "./features/auth/context/useAuth";
+import { AuthProvider } from "./features/auth/context/AuthProvider";
 
 // 未ログインならloginへリダイレクト
-const ProtectedRoute = ({
-  session,
-  children,
-}: {
-  session: Session | null;
-  children: React.ReactNode;
-}) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const session = useAuth();
   if (!session) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };
 
 // ログイン済みならhomeへリダイレクト
-const PublicRoute = ({
-  session,
-  children,
-}: {
-  session: Session | null;
-  children: React.ReactNode;
-}) => {
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const session = useAuth();
   if (session) return <Navigate to="/home" replace />;
   return <>{children}</>;
 };
 
+const CatchAll = () => {
+  const session = useAuth();
+  return <Navigate to={session ? "/home" : "/login"} replace />;
+};
+
 export const App = () => {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // 初回マウント時にセッションを取得
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
-
-    // セッションの変化を監視（ログイン・ログアウト時に発火）
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) =>
-      setSession(session),
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (loading) return <p>読み込み中...</p>;
-
   return (
-    <Routes>
-      {/* 未ログインのみアクセス可 */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute session={session}>
-            <LoginPage />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/signup"
-        element={
-          <PublicRoute session={session}>
-            <SignUpPage />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/reset-password"
-        element={
-          <PublicRoute session={session}>
-            <ResetPasswordPage />
-          </PublicRoute>
-        }
-      />
-      <Route path="/update-password" element={<UpdatePasswordPage />} />
+    <AuthProvider>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignUpPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPasswordPage />
+            </PublicRoute>
+          }
+        />
+        <Route path="/update-password" element={<UpdatePasswordPage />} />
 
-      {/* ログイン済みのみアクセス可 */}
-      <Route element={<Layout session={session!} />}>
         <Route
-          path="/home"
           element={
-            <ProtectedRoute session={session}>
-              <HomePage />
+            <ProtectedRoute>
+              <Layout />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/log-timeline"
-          element={
-            <ProtectedRoute session={session}>
-              <LogTimelinePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/log-timeline/:id"
-          element={
-            <ProtectedRoute session={session}>
-              <LogDetailPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/log-timeline/:id/edit"
-          element={
-            <ProtectedRoute session={session}>
-              <EditLogPage session={session!} />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/add-log"
-          element={
-            <ProtectedRoute session={session}>
-              <AddLogPage session={session!} />
-            </ProtectedRoute>
-          }
-        />
-      </Route>
+        >
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/log-timeline" element={<LogTimelinePage />} />
+          <Route path="/log-timeline/:id" element={<LogDetailPage />} />
+          <Route path="/log-timeline/:id/edit" element={<EditLogPage />} />
+          <Route path="/add-log" element={<AddLogPage />} />
+        </Route>
 
-      {/* それ以外はセッション状態に応じてリダイレクト */}
-      <Route
-        path="*"
-        element={<Navigate to={session ? "/home" : "/login"} replace />}
-      />
-    </Routes>
+        <Route path="*" element={<CatchAll />} />
+      </Routes>
+    </AuthProvider>
   );
 };
