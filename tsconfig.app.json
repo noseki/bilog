@@ -7,7 +7,6 @@
     "module": "ESNext",
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom", "node"],
     "skipLibCheck": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },

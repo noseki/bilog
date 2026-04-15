@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronDownIcon } from "lucide-react"
 import { CATEGORY_LABEL } from "@/utils/log";
 import { useCreateLog, useUpdateLog } from "./useLogs";
-import type { Session } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/client";
 
@@ -39,7 +38,6 @@ async function uploadImage(file: File, userId: string, prefix: "before" | "after
 }
 
 type LogFormProps = {
-    session: Session;
     defaultValues?: Partial<LogValues>;  // 編集時のみ渡す
     logId?: string;                      // 編集時のみ渡す
     existingBeforePhotoUrl?: string | null;
@@ -47,7 +45,7 @@ type LogFormProps = {
     isEdit?: boolean;
 }
 
-export const LogForm = ({ session, defaultValues, logId, existingBeforePhotoUrl, existingAfterPhotoUrl, isEdit }: LogFormProps) => {
+export const LogForm = ({ defaultValues, logId, existingBeforePhotoUrl, existingAfterPhotoUrl, isEdit }: LogFormProps) => {
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
     const createMutation = useCreateLog();
@@ -73,25 +71,28 @@ export const LogForm = ({ session, defaultValues, logId, existingBeforePhotoUrl,
     const onSubmit = async (data: LogValues) => {
         try {
             setError("");
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) throw new Error('認証情報の取得に失敗しました');
+
             const [beforeUrl, afterUrl] = await Promise.all([
                 data.before_photo_url?.[0]
-                    ? uploadImage(data.before_photo_url[0], session.user.id, "before")
+                    ? uploadImage(data.before_photo_url[0], user.id, "before")
                     : Promise.resolve(existingBeforePhotoUrl ?? null), // 新規ファイルがなければ既存pathを保持
                 data.after_photo_url?.[0]
-                    ? uploadImage(data.after_photo_url[0], session.user.id, "after")
+                    ? uploadImage(data.after_photo_url[0], user.id, "after")
                     : Promise.resolve(existingAfterPhotoUrl ?? null),
             ]);
             // mutateAsync()はasync/await形式(try/catchでエラーハンドリングしたいのでmutateAsync使用)
             if (logId) {
                 await updateMutation.mutateAsync({
                     logId,
-                    userId: session.user.id,
+                    userId: user.id,
                     formData: data,
                     photoUrls: { before: beforeUrl, after: afterUrl },
                 });
             } else {
                 await createMutation.mutateAsync({
-                    userId: session.user.id,
+                    userId: user.id,
                     formData: data,
                     photoUrls: { before: beforeUrl, after: afterUrl },
                 });

@@ -7,9 +7,9 @@ export const useFetchLogs = () => {
     return useQuery({
         queryKey: ["logs"],
         queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('未ログインです');
-            return fetchLogs(session.user.id);
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('未ログインです');
+            return fetchLogs(user.id);
         },
     });
 };
@@ -19,8 +19,6 @@ export const useFetchLog = ( id: string ) => {
     return useQuery({
         queryKey: ["log", id],
         queryFn: async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) throw new Error('未ログインです');
             return fetchLog(id);
         },
     });

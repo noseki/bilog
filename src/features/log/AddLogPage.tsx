@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import type { Session } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { LogForm } from "./LogForm";
 
-export const AddLogPage = ({ session }: { session: Session }) => {
+export const AddLogPage = () => {
     const navigate = useNavigate();
 
     return (
@@ -15,7 +14,7 @@ export const AddLogPage = ({ session }: { session: Session }) => {
             >
                 ← 戻る
             </Button>
-            <LogForm session={session} />
+            <LogForm />
         </>
     )
 }
