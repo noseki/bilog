@@ -17,18 +17,22 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useNavigate, useParams } from "react-router-dom";
 import { Ellipsis, PencilIcon, TrashIcon } from 'lucide-react';
-import { useDeleteLog } from "./useLogs";
+import { useDeleteLog, useFetchLog } from "./useLogs";
 
 export const LogDetailPage = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
     const deleteMutation = useDeleteLog();
+    const { data, isLoading, isError } = useFetchLog(id!);
 
     const handleDelete = async (id: string) => {
         if (!window.confirm(`記録を削除しますか？`)) return;
         deleteMutation.mutate(id);
         navigate("/log-timeline");
     };
+
+    if (isLoading) return <p className="p-4 text-gray-500">読み込み中...</p>
+    if (isError || !data) return <p className="p-4 text-red-500">データの取得に失敗しました</p>
 
     return (
         <>
@@ -48,7 +52,7 @@ export const LogDetailPage = () => {
                 />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex justify-end mr-2"><Ellipsis /></Button>
+                        <Button variant="ghost" className="flex justify-end mr-2" aria-label="オプション"><Ellipsis /></Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         <DropdownMenuGroup>
