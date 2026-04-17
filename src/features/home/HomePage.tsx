@@ -4,7 +4,7 @@ import { PlusIcon } from "lucide-react"
 
 export const HomePage = () => {
     return (
-        <div>
+        <div className="mx-auto w-full max-w-sm">
             <Link to="/add"
                 className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
             ></Link>

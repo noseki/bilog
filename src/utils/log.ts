@@ -33,7 +33,12 @@ export const CATEGORY_COLOR: Record<string, string> = {
 
 // 月日フォーマットに変換する
 export function formatMonthDay(dateStr: string): string {
-    return new Date(dateStr).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }); // 例：2026/4/3日 → 4/3
+    return new Date(dateStr).toLocaleDateString("ja-JP", { month: "numeric", day: "numeric" }); // 例：2026/4/1 → 4/1
+}
+
+// 年月日フォーマットに変換する
+export function formatFullDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" }); // 例：2026年4月1日
 }
 
 // 日本時間の日付でYYYY-MM-DD形式にする
