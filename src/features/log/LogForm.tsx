@@ -302,11 +302,11 @@ export const LogForm = ({
               )}
             />
             {existingBeforePhotoUrl && (
-              <div className="aspect-video max-w-[560px]">
+              <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={existingBeforePhotoUrl}
                   alt="実施前の写真"
-                  className="w-full h-full object-contain object-center"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}
@@ -336,11 +336,11 @@ export const LogForm = ({
               )}
             />
             {existingAfterPhotoUrl && (
-              <div className="aspect-video max-w-[560px]">
+              <div className="relative aspect-[3/4] overflow-hidden">
                 <img
                   src={existingAfterPhotoUrl}
                   alt="実施後の写真"
-                  className="w-full h-full object-contain object-center"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}

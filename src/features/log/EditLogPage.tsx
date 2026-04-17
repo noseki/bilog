@@ -12,11 +12,11 @@ export const EditLogPage = () => {
     if (isError || !data) return <p className="p-4 text-red-500">データの取得に失敗しました</p>
 
     return (
-        <>
+        <div className="mx-auto w-full max-w-sm">
             <Button
                 variant="ghost"
                 onClick={() => navigate(-1)}
-                className="text-sm"
+                className="text-sm mb-2"
             >
                 ← 戻る
             </Button>
@@ -35,6 +35,6 @@ export const EditLogPage = () => {
                 existingAfterPhotoUrl={data.after_photo_url}
                 isEdit
             />
-        </>
+        </div>
     );
 }
