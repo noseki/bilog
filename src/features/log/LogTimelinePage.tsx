@@ -12,7 +12,7 @@ export const LogTimelinePage = () => {
   const grouped = groupLogsByMonth(logs ?? []);
 
   return (
-    <div>
+    <div className="mx-auto w-full max-w-sm">
       {grouped.length === 0 ? (
         <p>まだ記録がありません</p>
       ) : (
