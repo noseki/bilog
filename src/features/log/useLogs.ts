@@ -1,4 +1,4 @@
-import { fetchLogs, createLog, updateLog, deleteLog, fetchLog } from "@/api/logs";
+import { fetchLogs, createLog, updateLog, deleteLog, fetchLog, fetchLogsWithAfterPhotos } from "@/api/logs";
 import { supabase } from "@/lib/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -55,5 +55,18 @@ export function useDeleteLog() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["logs"] });
         },
+    });
+}
+
+// 変遷ビュー用ログ取得カスタムフック
+export const useFetchLogsWithAfterPhotos = () => {
+    return useQuery({
+        queryKey: ["logs", "afterPhotos"],
+        queryFn: async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('未ログインです');
+            return fetchLogsWithAfterPhotos(user.id);
+        },
+        staleTime: 1000 * 60 * 30, // 30分
     });
 }
