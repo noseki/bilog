@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
+import { CategoryPhotoTimeline } from "./CategoryPhotoTimeline";
 
 export const HomePage = () => {
     return (
@@ -16,7 +17,7 @@ export const HomePage = () => {
                     </Link>
                 </Button>
             </div>
-            <div>ホーム画面です</div>
+            <CategoryPhotoTimeline />
         </div>
     );
 };

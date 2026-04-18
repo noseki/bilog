@@ -144,3 +144,25 @@ export const deleteLog = async (id: string) => {
 
   if (error) throw new Error(`deleteLog error: ${error.message}`);
 };
+
+// 変遷ビュー用ログ取得
+export const fetchLogsWithAfterPhotos = async (userId: string) => {
+  const logs = await fetchLogs(userId);
+
+  // After写真が存在するログを取得
+  const logsWithPhotos = logs.filter(log => log.after_photo_url != null);
+  if (logsWithPhotos.length === 0) return logsWithPhotos;
+
+  // After写真のファイルパスから署名URL生成
+  const paths = logsWithPhotos.map(log => log.after_photo_url as string);
+  const { data: signedData } = await supabase.storage
+    .from("images")
+    .createSignedUrls(paths, 3600);
+
+  const urlMap = new Map(signedData?.map(data => [data.path, data.signedUrl]) ?? []);
+
+  return logsWithPhotos.map(log => ({
+    ...log,
+    after_photo_url: urlMap.get(log.after_photo_url) ?? null,
+  }));
+};

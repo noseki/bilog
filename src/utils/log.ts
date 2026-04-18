@@ -15,6 +15,9 @@ export function groupLogsByMonth(logs: Log[]): [string, Log[]][] {
     return Object.entries(map).sort((a, b) => b[0].localeCompare(a[0]));
 }
 
+// 変遷ビューのカテゴリ別表示順
+export const CATEGORY_ORDER = ["hair", "nail", "lash", "esthetic", "medical"] as const;
+
 export const CATEGORY_LABEL: Record<string, string> = {
     hair: "ヘア",
     nail: "ネイル",
