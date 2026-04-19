@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useFetchLogsWithAfterPhotos } from "../log/useLogs";
-import { CATEGORY_COLOR, CATEGORY_LABEL, CATEGORY_ORDER, formatMonthDay } from "@/utils/log";
+import { CATEGORY_COLOR, CATEGORY_LABEL, CATEGORY_ORDER, formatFullDate } from "@/utils/log";
 import { Link } from "react-router-dom";
 
 export const CategoryPhotoTimeline = () => {
@@ -18,12 +18,12 @@ export const CategoryPhotoTimeline = () => {
         .map(category => ({ category, categoryLogs: sortedLogs.filter(log => log.category === category).slice(-10)}))
         .filter(group => group.categoryLogs.length > 0)
 
-    if (categoryGroups.length === 0) return null;
-
     return (
         <div className="space-y-6">
-            <p className="text-sm">写真記録比較（直近10件）</p>
-                {categoryGroups.map(({ category, categoryLogs }) => (
+            <p className="text-sm">美容履歴（直近10件）</p>
+                {categoryGroups.length === 0 ? (
+                    <p>まだ写真がありません</p>
+                ) : ( categoryGroups.map(({ category, categoryLogs }) => (
                     <section key={category}>
                         <span
                             className={cn(
@@ -42,18 +42,19 @@ export const CategoryPhotoTimeline = () => {
                                     key={log.id}
                                     to={`/log-timeline/${log.id}`}
                                     className="w-28 shrink-0"
+                                    data-testid="categoryLogs-item"
                                 >
                                     <div className="aspect-[3/4] overflow-hidden rounded-lg bg-muted">
                                         <img src={log.after_photo_url!} alt={log.title} className="h-full w-full object-cover" />
                                     </div>
-                                    <p className="mt-1 text-xs text-muted-foreground">{formatMonthDay(log.done_at)}</p>
+                                    <p className="mt-1 text-xs text-muted-foreground">{formatFullDate(log.done_at)}</p>
                                     <p className="truncate text-xs font-medium">{log.title}</p>
                                 </Link>
                             ))}
                         </div>
                     </section>
                 ))
-            }
+            )}
         </div>
     );
 };
