@@ -3,6 +3,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { LogDetailPage } from "@/features/log/LogDetailPage";
+import { formatFullDate } from "@/utils/log";
 
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async () => {
@@ -30,8 +31,8 @@ vi.mock("@/lib/supabase/client", () => ({
 }));
 
 const baseMockLog = {
-    after_photo_url: null,
-    before_photo_url: null,
+    after_photo_url: "https://picsum.photos/200/300",
+    before_photo_url: "https://picsum.photos/200/300",
     category: "nail" as const,
     cost: 1000,
     created_at: "2026-04-01 09:16:52.56655+00",
@@ -59,7 +60,7 @@ vi.mock("@/api/logs", () => ({
 
 const user = userEvent.setup();
 
-describe("DeleteLog", () => {
+describe("LogDetail", () => {
     beforeEach(() => {
         mockNavigate.mockReset();
         mockFetchLog.mockReset();
@@ -67,6 +68,21 @@ describe("DeleteLog", () => {
         mockDeleteLog.mockReset();
         mockDeleteLog.mockResolvedValue(undefined);
     });
+
+    test("記録の詳細（全項目）が表示されること", async () => {
+        mockFetchLog.mockResolvedValue({ ...baseMockLog });
+        render(<LogDetailPage />);
+
+        expect(await screen.findByText("テストタイトル")).toBeInTheDocument();
+        expect(screen.getByText("ネイル")).toBeInTheDocument();
+        expect(screen.getByText(formatFullDate("2026-04-01"))).toBeInTheDocument();
+        expect(screen.getByAltText("Before")).toBeInTheDocument();
+        expect(screen.getByAltText("After")).toBeInTheDocument();
+        expect(screen.getByText("¥1,000")).toBeInTheDocument();
+        expect(screen.getByText("テストです")).toBeInTheDocument();
+        expect(screen.getByText("test salon")).toBeInTheDocument();
+        expect(screen.getByText("担当者：テスト花子さん")).toBeInTheDocument();
+    })
 
     test("削除できること", async () => {
         vi.spyOn(window, 'confirm').mockReturnValue(true);
