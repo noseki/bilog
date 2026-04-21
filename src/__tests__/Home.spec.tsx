@@ -22,7 +22,7 @@ const { mockFetchLogsWithAfterPhotos } = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/api/logs", () => ({
+vi.mock("@/features/log/api/logs", () => ({
   fetchLogsWithAfterPhotos: mockFetchLogsWithAfterPhotos,
 }));
 

@@ -54,7 +54,7 @@ const { mockCreateLog, mockUpdateLog, mockFetchLog } = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/api/logs", () => ({
+vi.mock("@/features/log/api/logs", () => ({
   createLog: mockCreateLog,
   updateLog: mockUpdateLog,
   fetchLog: mockFetchLog,
