@@ -1,7 +1,7 @@
 import type { LogValues } from "@/features/log/schema";
-import { supabase } from "../lib/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import type { Tables } from "@/types/supabase";
-import { formatLocalDate } from "@/utils/log";
+import { formatLocalDate } from "@/features/log/utils/log";
 
 type Log = Tables<"logs">;
 
@@ -23,7 +23,7 @@ type LogPayload = {
   photoUrls: { before: string | null; after: string | null };
 };
 
-// salon / staff の upsert を共通化
+// salonsとstaffsのupsertを共通化
 async function upsertSalonAndStaff(
   userId: string,
   formData: LogValues,
@@ -145,24 +145,47 @@ export const deleteLog = async (id: string) => {
   if (error) throw new Error(`deleteLog error: ${error.message}`);
 };
 
-// 変遷ビュー用ログ取得
+// 美容履歴用ログ取得
 export const fetchLogsWithAfterPhotos = async (userId: string) => {
   const logs = await fetchLogs(userId);
 
   // After写真が存在するログを取得
-  const logsWithPhotos = logs.filter(log => log.after_photo_url != null);
+  const logsWithPhotos = logs.filter((log) => log.after_photo_url != null);
   if (logsWithPhotos.length === 0) return logsWithPhotos;
 
   // After写真のファイルパスから署名URL生成
-  const paths = logsWithPhotos.map(log => log.after_photo_url as string);
+  const paths = logsWithPhotos.map((log) => log.after_photo_url as string);
   const { data: signedData } = await supabase.storage
     .from("images")
     .createSignedUrls(paths, 3600);
 
-  const urlMap = new Map(signedData?.map(data => [data.path, data.signedUrl]) ?? []);
+  const urlMap = new Map(
+    signedData?.map((data) => [data.path, data.signedUrl]) ?? [],
+  );
 
-  return logsWithPhotos.map(log => ({
+  return logsWithPhotos.map((log) => ({
     ...log,
     after_photo_url: urlMap.get(log.after_photo_url) ?? null,
   }));
+};
+
+// 特定の年月(yearMonth: "YYYY-MM")のログ取得
+export const fetchLogsByYearMonth = async (userId: string, yearMonth: string): Promise<Log[]> => {
+    const [year, month] = yearMonth.split("-").map(Number);
+
+    const start = `${yearMonth}-01`;
+    // 12月であれば翌年1月
+    const nextMonth = month === 12
+        ? `${year + 1}-01-01`
+        : `${year}-${String(month + 1).padStart(2, "0")}-01`;
+
+    const { data, error } = await supabase
+        .from("logs")
+        .select("*")
+        .eq("user_id", userId)
+        .gte("done_at", start)
+        .lt("done_at", nextMonth);
+
+    if (error) throw new Error(`fetchLogsByYearMonth error: ${error.message}`);
+    return data;
 };

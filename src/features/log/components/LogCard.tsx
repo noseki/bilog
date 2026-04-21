@@ -1,6 +1,10 @@
 import type { Tables } from "@/types/supabase";
 import { Card, CardContent } from "@/components/ui/card";
-import { CATEGORY_COLOR, CATEGORY_LABEL, formatMonthDay } from "@/utils/log";
+import {
+  CATEGORY_COLOR,
+  CATEGORY_LABEL,
+  formatMonthDay,
+} from "@/features/log/utils/log";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 

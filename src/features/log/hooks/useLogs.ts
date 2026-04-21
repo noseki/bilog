@@ -1,4 +1,4 @@
-import { fetchLogs, createLog, updateLog, deleteLog, fetchLog, fetchLogsWithAfterPhotos } from "@/api/logs";
+import { fetchLogs, createLog, updateLog, deleteLog, fetchLog, fetchLogsWithAfterPhotos, fetchLogsByYearMonth } from "../api/logs";
 import { supabase } from "@/lib/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -58,7 +58,7 @@ export function useDeleteLog() {
     });
 }
 
-// 変遷ビュー用ログ取得カスタムフック
+// 美容履歴用ログ取得カスタムフック
 export const useFetchLogsWithAfterPhotos = () => {
     return useQuery({
         queryKey: ["logs", "afterPhotos"],
@@ -70,3 +70,15 @@ export const useFetchLogsWithAfterPhotos = () => {
         staleTime: 1000 * 60 * 30, // 30分
     });
 }
+
+// 特定の年月の記録を取得するカスタムフック
+export const useFetchLogsByYearMonth = (year_month: string) => {
+    return useQuery({
+        queryKey: ["logs", year_month],
+        queryFn: async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('未ログインです');
+            return fetchLogsByYearMonth(user.id, year_month);
+        },
+    });
+};

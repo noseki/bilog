@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Link } from 'react-router-dom';
-import { signUpSchema, type SignUpValues } from './schema'
+import { signUpSchema, type SignUpValues } from '../schema'
 import { Button } from '@/components/ui/button'
 
 export const SignUpPage = () => {

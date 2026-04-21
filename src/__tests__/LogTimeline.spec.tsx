@@ -1,4 +1,4 @@
-import { LogTimelinePage } from "@/features/log/LogTimelinePage";
+import { LogTimelinePage } from "@/features/log/pages/LogTimelinePage";
 import { render } from "@/test-utils/render";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
