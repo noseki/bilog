@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { logSchema, type LogValues } from "./schema";
+import { logSchema, type LogValues } from "../schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import {
@@ -26,11 +26,10 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon } from "lucide-react";
-import { CATEGORY_LABEL } from "@/utils/log";
-import { useCreateLog, useUpdateLog } from "./useLogs";
+import { CATEGORY_LABEL } from "@/features/log/utils/log";
+import { useCreateLog, useUpdateLog } from "../hooks/useLogs";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/client";
-
 
 // 画像をsupabase storageにアップロードする
 async function uploadImage(

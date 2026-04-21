@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { resetPasswordSchema, type ResetPasswordValues } from './schema'
+import { resetPasswordSchema, type ResetPasswordValues } from '../schema'
 import { supabase } from "@/lib/supabase/client";
 import { Link } from "react-router-dom";
 import { Button } from '@/components/ui/button'

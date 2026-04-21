@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Link } from "react-router-dom";
-import { loginSchema, type LoginValues } from "./schema";
+import { loginSchema, type LoginValues } from "../schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,

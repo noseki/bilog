@@ -1,16 +1,19 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { HomePage } from "./features/home/HomePage";
-import { ResetPasswordPage } from "./features/auth/ResetPasswordPage";
-import { LoginPage } from "./features/auth/LoginPage";
-import { SignUpPage } from "./features/auth/SignUpPage";
-import { UpdatePasswordPage } from "./features/auth/UpdatePasswordPage";
-import { LogTimelinePage } from "./features/log/LogTimelinePage";
+import { HomePage } from "./features/home/pages/HomePage";
+import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage";
+import { LoginPage } from "./features/auth/pages/LoginPage";
+import { SignUpPage } from "./features/auth/pages/SignUpPage";
+import { UpdatePasswordPage } from "./features/auth/pages/UpdatePasswordPage";
+import { LogTimelinePage } from "./features/log/pages/LogTimelinePage";
 import { Layout } from "./components/layout/Layout";
-import { AddLogPage } from "./features/log/AddLogPage";
-import { LogDetailPage } from "./features/log/LogDetailPage";
-import { EditLogPage } from "./features/log/EditLogPage";
-import { useAuth } from "./features/auth/context/useAuth";
-import { AuthProvider } from "./features/auth/context/AuthProvider";
+import { AddLogPage } from "./features/log/pages/AddLogPage";
+import { LogDetailPage } from "./features/log/pages/LogDetailPage";
+import { EditLogPage } from "./features/log/pages/EditLogPage";
+import { useAuth } from "./features/auth/hooks/useAuth";
+import { AuthProvider } from "./features/auth/hooks/AuthProvider";
+import { ManageBudgetPage } from "./features/budget/pages/ManageBudgetPage";
+import { AddBudgetPage } from "./features/budget/pages/AddBudgetPage";
+import { EditBudgetPage } from "./features/budget/pages/EditBudgetPage";
 
 // 未ログインならloginへリダイレクト
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -70,9 +73,12 @@ export const App = () => {
         >
           <Route path="/home" element={<HomePage />} />
           <Route path="/log-timeline" element={<LogTimelinePage />} />
+          <Route path="/log-timeline/add" element={<AddLogPage />} />
           <Route path="/log-timeline/:id" element={<LogDetailPage />} />
           <Route path="/log-timeline/:id/edit" element={<EditLogPage />} />
-          <Route path="/add-log" element={<AddLogPage />} />
+          <Route path="/manage-budget" element={<ManageBudgetPage />} />
+          <Route path="/manage-budget/add" element={<AddBudgetPage />} />
+          <Route path="/manage-budget/:id/edit" element={<EditBudgetPage />} />
         </Route>
 
         <Route path="*" element={<CatchAll />} />
