@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updatePasswordSchema, type UpdatePasswordValues } from './schema'
+import { updatePasswordSchema, type UpdatePasswordValues } from '../schema'
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";

@@ -1,6 +1,9 @@
-import { groupLogsByMonth } from "@/utils/log";
-import { useFetchLogs } from "./useLogs";
-import { LogCard } from "./LogCard";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
+import { groupLogsByMonth } from "@/features/log/utils/log";
+import { useFetchLogs } from "../hooks/useLogs";
+import { LogCard } from "../components/LogCard";
 
 export const LogTimelinePage = () => {
   const { data: logs, isLoading, isError } = useFetchLogs();
@@ -13,6 +16,14 @@ export const LogTimelinePage = () => {
 
   return (
     <div className="mx-auto w-full max-w-sm">
+      <div className="flex justify-end">
+        <Button asChild variant="outline">
+          <Link to="/log-timeline/add">
+            <PlusIcon />
+            記録する
+          </Link>
+        </Button>
+      </div>
       {grouped.length === 0 ? (
         <p>まだ記録がありません</p>
       ) : (

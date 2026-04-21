@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import { useNavigate } from "react-router-dom";
-import { LogForm } from "./LogForm";
+import { BudgetForm } from "../components/BudgetForm";
 
-export const AddLogPage = () => {
+export const AddBudgetPage = () => {
     const navigate = useNavigate();
 
     return (
@@ -14,7 +14,8 @@ export const AddLogPage = () => {
             >
                 ← 戻る
             </Button>
-            <LogForm />
+            <BudgetForm />
         </div>
-    )
+    );
 }
+

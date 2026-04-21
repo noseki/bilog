@@ -2,7 +2,8 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useCallback } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "../ui/button";
-import { useAuth } from "@/features/auth/context/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { Toaster } from "../ui/sonner";
 
 export const Layout = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export const Layout = () => {
                   記録一覧
                 </Link>
                 <Link
-                  to="/#"
+                  to="/manage-budget"
                   className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
                 >
                   予算管理
@@ -70,6 +71,7 @@ export const Layout = () => {
           </p>
         </div>
       </footer>
+      <Toaster position="top-center" richColors /> 
     </div>
   );
 };
