@@ -45,6 +45,7 @@ export const BudgetForm = ({
     } = useForm<budgetValues>({
         resolver: zodResolver(budgetSchema),
         defaultValues: defaultValues ?? {
+            year_month: "",
             amount: 0,
         },
     });
@@ -57,7 +58,6 @@ export const BudgetForm = ({
                 error: authError,
             } = await supabase.auth.getUser();
             if (authError || !user) throw new Error("認証情報の取得に失敗しました");
-
 
             // mutateAsync()はasync/await形式(try/catchでエラーハンドリングしたいのでmutateAsync使用)
             if (budgetId) {
@@ -74,8 +74,12 @@ export const BudgetForm = ({
             navigate("/manage-budget");
         } catch (e) {
             const message = e instanceof Error ? e.message : String(e);
-            console.error("onSubmit error:", message);
-            setError("保存に失敗しました。入力内容を確認してください。");
+            if (message === "DUPLICATE_YEAR_MONTH") {
+                setError("この年月の予算は既に登録されています");
+            } else {
+                console.error("onSubmit error:", message);
+                setError("保存に失敗しました。入力内容を確認してください。");
+            }
         }
     };
 

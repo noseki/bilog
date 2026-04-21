@@ -45,7 +45,6 @@ export const createBudget = async ({
     userId: string,
     formData: budgetValues
 }): Promise<Budget> => {
-
     const { data, error } = await supabase
         .from("budgets")
         .insert({
@@ -56,7 +55,10 @@ export const createBudget = async ({
         .select()
         .single();
 
-    if (error) throw new Error(`createBudget error: ${error.message}`);
+    if (error) {
+        if (error.code === "23505") throw new Error("DUPLICATE_YEAR_MONTH"); // 対象年月が重複している場合（一意性制約違反）
+        throw new Error(`createBudget error: ${error.message}`);
+    }
     return data;
 };
 
