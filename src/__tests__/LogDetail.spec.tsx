@@ -53,7 +53,7 @@ const { mockFetchLog, mockDeleteLog } = vi.hoisted(() => {
   };
 });
 
-vi.mock("@/api/logs", () => ({
+vi.mock("@/features/log/api/logs", () => ({
   fetchLog: mockFetchLog,
   deleteLog: mockDeleteLog,
 }));
