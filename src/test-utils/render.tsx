@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render as rtlRender } from "@testing-library/react"
 import { BrowserRouter } from "react-router-dom"
+import { Toaster } from "sonner"
 
 export function render(ui: React.ReactNode) {
     const queryClient = new QueryClient({
@@ -16,6 +17,7 @@ export function render(ui: React.ReactNode) {
             <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
                     {props.children}
+                    <Toaster />
                 </BrowserRouter>
             </QueryClientProvider>
         ),

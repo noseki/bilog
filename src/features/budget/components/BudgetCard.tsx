@@ -38,7 +38,7 @@ export const BudgetCard = ({ budget }: { budget: Budget }) => {
                         <p className="font-medium">¥{usedAmount.toLocaleString()}</p>
                     </div>
                     <div>
-                        <p className="text-xs text-muted-foreground mb-0.5">残予算</p>
+                        <p className="text-xs text-muted-foreground mb-0.5">残り</p>
                         <p className={`font-medium flex items-center gap-1 ${isOver ? "text-red-500" : ""}`}>
                             {isOver && <AlertTriangle className="w-3.5 h-3.5" />}
                             ¥{remaining.toLocaleString()}
