@@ -16,15 +16,29 @@ vi.mock("@/lib/supabase/client", () => ({
   },
 }));
 
-const { mockFetchLogsWithAfterPhotos } = vi.hoisted(() => {
+const { mockFetchLogsByYearMonth, mockFetchBudgetByYearMonth, mockFetchLogsWithAfterPhotos } = vi.hoisted(() => {
   return {
+    mockFetchLogsByYearMonth: vi.fn(),
+    mockFetchBudgetByYearMonth: vi.fn(),
     mockFetchLogsWithAfterPhotos: vi.fn(),
   };
 });
 
 vi.mock("@/features/log/api/logs", () => ({
+  fetchLogsByYearMonth: mockFetchLogsByYearMonth,
   fetchLogsWithAfterPhotos: mockFetchLogsWithAfterPhotos,
 }));
+
+vi.mock("@/features/budget/api/budgets", () => ({
+  fetchBudgetByYearMonth: mockFetchBudgetByYearMonth,
+}));
+
+const baseMockBudget = {
+    amount: 10000,
+    id: "test-id-1",
+    user_id: "test-user-id",
+    year_month: "2026-04",
+};
 
 const baseMockLog = {
   after_photo_url: "https://picsum.photos/200/300",
@@ -42,12 +56,45 @@ const baseMockLog = {
   user_id: "test-user-id",
 };
 
-const user = userEvent.setup();
-
 describe("Home", () => {
+  const user = userEvent.setup();
+
   beforeEach(() => {
+    mockFetchLogsByYearMonth.mockReset();
+    mockFetchLogsByYearMonth.mockResolvedValue([]);
+    mockFetchBudgetByYearMonth.mockReset();
+    mockFetchBudgetByYearMonth.mockResolvedValue(null);
     mockFetchLogsWithAfterPhotos.mockReset();
     mockFetchLogsWithAfterPhotos.mockResolvedValue([]); // 空配列に戻す
+  });
+
+  test("今月の予算（予算額/使用額/残り/カテゴリ別グラフ）が表示されていること", async() => {
+    mockFetchLogsByYearMonth.mockResolvedValue([{...baseMockLog}]);
+    mockFetchBudgetByYearMonth.mockResolvedValue({...baseMockBudget});
+    render(<HomePage />);
+
+    expect(await screen.findByText("予算額")).toBeInTheDocument();
+    expect(screen.getByText("使用額")).toBeInTheDocument();
+    expect(screen.getByText("残り")).toBeInTheDocument();
+
+    const chartWrapper = document.querySelector('.recharts-wrapper');
+    expect(chartWrapper).toBeInTheDocument();
+    expect(screen.getByText("ネイル")).toBeInTheDocument();
+  });
+
+  test("予算超過時にアラートが表示されること", async() => {
+    mockFetchLogsByYearMonth.mockResolvedValue([{...baseMockLog, cost: 20000 }]); // 予算を10000円超過
+    mockFetchBudgetByYearMonth.mockResolvedValue({...baseMockBudget});
+    render(<HomePage />);
+
+    expect(await screen.findByText("今月の予算を¥10,000超過しています")).toBeInTheDocument();
+  });
+
+  test("今月の予算がない場合にその旨と設定ページへのリンクが表示されていること", async() => {
+    render(<HomePage />);
+
+    expect(await screen.findByText("今月の予算が設定されていません。")).toBeInTheDocument();
+    expect(screen.getByText("設定する")).toHaveAttribute("href", "/manage-budget/add");
   });
 
   test("美容履歴がカテゴリ別に表示されていること", async () => {

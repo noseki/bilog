@@ -69,7 +69,6 @@ export const updateBudget = async ({
     id: string,
     amount: number,
 }): Promise<Budget> => {
-
     const { data, error } = await supabase
         .from("budgets")
         .update({
