@@ -60,9 +60,9 @@ vi.mock("@/features/log/api/logs", () => ({
   fetchLog: mockFetchLog,
 }));
 
-const user = userEvent.setup();
-
 describe("EditLog", () => {
+  const user = userEvent.setup();
+
   beforeEach(() => {
     mockNavigate.mockReset();
     mockFetchLog.mockReset();
@@ -96,5 +96,15 @@ describe("EditLog", () => {
       );
       expect(mockNavigate).toHaveBeenCalledWith("/log-timeline");
     });
+  });
+
+  test("保存に失敗した場合はエラー表示されること", async () => {
+      mockFetchLog.mockResolvedValue({ ...baseMockLog });
+      mockUpdateLog.mockRejectedValue(new Error(""));
+      render(<EditLogPage />);
+
+      await user.click(await screen.findByRole("button", { name: "記録を更新する" }));
+
+      expect(await screen.findByText("保存に失敗しました。入力内容を確認してください。")).toBeInTheDocument();
   });
 });

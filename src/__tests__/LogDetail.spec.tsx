@@ -22,11 +22,6 @@ vi.mock("@/lib/supabase/client", () => ({
         data: { user: { id: "test-user-id" } },
       }),
     },
-    storage: {
-      from: vi.fn().mockReturnValue({
-        upload: vi.fn().mockResolvedValue({ error: null }),
-      }),
-    },
   },
 }));
 
@@ -58,9 +53,9 @@ vi.mock("@/features/log/api/logs", () => ({
   deleteLog: mockDeleteLog,
 }));
 
-const user = userEvent.setup();
-
 describe("LogDetail", () => {
+  const user = userEvent.setup();
+
   beforeEach(() => {
     mockNavigate.mockReset();
     mockFetchLog.mockReset();

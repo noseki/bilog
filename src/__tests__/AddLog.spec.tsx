@@ -41,9 +41,9 @@ vi.mock("@/features/log/api/logs", () => ({
   updateLog: mockUpdateLog,
 }));
 
-const user = userEvent.setup();
-
 describe("AddLog", () => {
+  const user = userEvent.setup();
+
   beforeEach(() => {
     mockCreateLog.mockReset();
     mockCreateLog.mockResolvedValue([]); // 空配列に戻す
@@ -93,15 +93,9 @@ describe("AddLog", () => {
     await user.click(screen.getByRole("button", { name: "記録を追加する" }));
 
     // 金額はデフォルト値が0なのでエラーは出ない
-    expect(
-      await screen.findByText("カテゴリーを選択してください"),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("タイトルを入力してください"),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText("実施日を入力してください"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("カテゴリーを選択してください")).toBeInTheDocument();
+    expect(await screen.findByText("タイトルを入力してください")).toBeInTheDocument();
+    expect(await screen.findByText("実施日を入力してください")).toBeInTheDocument();
   });
 
   test("必須項目を入力しなくても登録ボタンを押すと登録できて/log-timelineに遷移する", async () => {
@@ -125,5 +119,29 @@ describe("AddLog", () => {
     await user.click(screen.getByRole("button", { name: "記録を追加する" }));
 
     expect(mockNavigate).toHaveBeenCalledWith("/log-timeline");
+  });
+
+  test("保存に失敗した場合はエラー表示されること", async () => {
+      mockCreateLog.mockRejectedValue(new Error(""));
+      render(<AddLogPage />);
+
+      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("option", { name: "ヘア" }));
+
+      await user.type(screen.getByLabelText(/タイトル/), "テストヘア");
+      await user.type(screen.getByLabelText(/金額/), "5000");
+
+      // 実施日
+      // ポップオーバーを開く
+      await user.click(screen.getByRole("button", { name: /日付を選択/ }));
+
+      // カレンダーが表示されるまで待つ
+      const grid = await screen.findByRole("grid"); // カレンダーグリッド
+      const dayButton = within(grid).getByRole("button", { name: /15/ });
+      await user.click(dayButton);
+
+      await user.click(screen.getByRole("button", { name: "記録を追加する" }));
+
+      expect(await screen.findByText("保存に失敗しました。入力内容を確認してください。")).toBeInTheDocument();
   });
 });
