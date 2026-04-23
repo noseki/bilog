@@ -1,10 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { resetPasswordSchema, type ResetPasswordValues } from '../schema'
+import { resetPasswordSchema, type ResetPasswordValues } from "../schema";
 import { supabase } from "@/lib/supabase/client";
 import { Link } from "react-router-dom";
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export const ResetPasswordPage = () => {
     const [error, setError] = useState<string | null>(null);
@@ -20,41 +29,60 @@ export const ResetPasswordPage = () => {
 
     const onSubmit = async ({ email }: ResetPasswordValues) => {
         try {
-            setError("");
-
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/update-password`,
-            });
-            if (error) throw new Error();
-            setIsComplete(true);
+        setError("");
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/update-password`,
+        });
+        if (error) throw new Error();
+        setIsComplete(true);
         } catch (error) {
-            console.error(`ResetPasswordPage onSubmit Error: ${error}`);
-            setError("メールの送信に失敗しました。再度お試しください。");
+        console.error(`ResetPasswordPage onSubmit Error: ${error}`);
+        setError("メールの送信に失敗しました。再度お試しください。");
         }
     };
 
     if (isComplete) {
         return (
-            <div>
-                <h1>メールを送信しました</h1>
-                <p>パスワード再設定用のリンクをメールに送信しました。</p>
-                <p>メール内のリンクからパスワードを再設定してください。</p>
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
+            <div className="mb-8 text-center">
+            <h1 className="text-4xl font-bold text-indigo-600">Bilog</h1>
             </div>
+            <Card className="w-full max-w-sm">
+                <CardHeader className="mb-4">
+                    <CardTitle>メールを送信しました</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground space-y-2">
+                    <p>パスワード再設定用のリンクをメールに送信しました。</p>
+                    <p>メール内のリンクからパスワードを再設定してください。</p>
+                </CardContent>
+                <CardFooter>
+                    <Link to="/login" className="text-sm text-indigo-600 hover:underline">
+                    ログイン画面に戻る
+                    </Link>
+                </CardFooter>
+            </Card>
+        </div>
         );
     }
 
     return (
-        <div>
-            <div>
-                <h1>パスワード再設定</h1>
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
+            <div className="mb-8 text-center">
+                <h1 className="text-4xl font-bold text-indigo-600">Bilog</h1>
+                <p className="mt-1 text-sm text-muted-foreground">美容記録・予算管理アプリ</p>
             </div>
 
-            {error && <div className="text-red-500">{error}</div>}
+            <Card className="w-full max-w-sm">
+                <form onSubmit={handleSubmit(onSubmit)}>
+                <CardHeader className="mb-4">
+                    <CardTitle>パスワードをお忘れですか？</CardTitle>
+                    {error && <p className="text-sm text-red-500">{error}</p>}
+                </CardHeader>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                    <label htmlFor="email">メールアドレス</label>
-                    <input
+                <CardContent>
+                    <div className="grid gap-2">
+                    <Label htmlFor="email">メールアドレス</Label>
+                    <Input
                         id="email"
                         type="email"
                         {...register("email")}
@@ -62,18 +90,21 @@ export const ResetPasswordPage = () => {
                         disabled={isSubmitting}
                     />
                     {errors.email && (
-                        <p className="text-red-500">{errors.email.message};</p>
+                        <p className="text-sm text-red-500">{errors.email.message}</p>
                     )}
-                </div>
-                <Button disabled={isSubmitting}>
+                    </div>
+                </CardContent>
+
+                <CardFooter className="flex-col gap-3">
+                    <Button type="submit" disabled={isSubmitting} className="w-full">
                     {isSubmitting ? "メール送信中..." : "パスワードを再設定する"}
-                </Button>
-            </form>
-
-            <div>
-                <Link to="/login">ログイン画面に戻る</Link>
-            </div>
+                    </Button>
+                    <Link to="/login" className="text-sm text-indigo-600 hover:underline">
+                    ログイン画面に戻る
+                    </Link>
+                </CardFooter>
+                </form>
+            </Card>
         </div>
-
     );
 };

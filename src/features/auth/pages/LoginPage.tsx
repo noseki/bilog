@@ -18,89 +18,89 @@ import { Label } from "@/components/ui/label";
 export const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
 
-  // react-hook-formのセットアップ
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginValues>({
-    // zodResolverでzodスキーマをバリデーションに使用
     resolver: zodResolver(loginSchema),
   });
 
-  //  ログインボタン押下時
   const onSubmit = async ({ email, password }: LoginValues) => {
     try {
       setError("");
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw new Error();
     } catch (error) {
       console.error(`LoginPage onSubmit Error: ${error}`);
       setError("メールアドレスまたはパスワードが正しくありません");
-      // 成功時はApp.tsxのonAuthStateChangeが自動でリダイレクト
     }
   };
 
   return (
-    <Card className="relative my-8 mx-auto w-full max-w-sm">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardHeader>
-          <CardTitle>ログイン</CardTitle>
-          {error && <div className="text-red-500">{error}</div>}
-        </CardHeader>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-12">
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold text-indigo-600">Bilog</h1>
+        <p className="mt-1 text-sm text-muted-foreground">美容記録・予算管理アプリ</p>
+      </div>
 
-        <CardContent>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-2">
-              <Label htmlFor="email">メールアドレス</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                placeholder="example@email.com"
-                disabled={isSubmitting}
-              />
-              {errors.email && (
-                <p className="text-red-500">{errors.email.message}</p>
-              )}
-            </div>
+      <Card className="w-full max-w-sm">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardHeader className="mb-4">
+            <CardTitle>ログイン</CardTitle>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+          </CardHeader>
 
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">パスワード</Label>
-                <Link
-                  to="/reset-password"
-                  className="text-blue-500 ml-auto inline-block text-xs underline-offset-4 hover:underline"
-                >
-                  パスワードをお忘れですか？
-                </Link>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email">メールアドレス</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="example@email.com"
+                  disabled={isSubmitting}
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
               </div>
-              <Input
-                id="password"
-                type="password"
-                {...register("password")}
-                placeholder="パスワードを入力"
-                disabled={isSubmitting}
-              />
-              {errors.password && (
-                <p className="text-red-500">{errors.password.message}</p>
-              )}
-            </div>
-          </div>
-        </CardContent>
 
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "ログイン中..." : "ログイン"}
-          </Button>
-          <Link to="/signup" className="text-blue-500 hover:underline">
-            ユーザー登録がお済みでない方
-          </Link>
-        </CardFooter>
-      </form>
-    </Card>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">パスワード</Label>
+                  <Link
+                    to="/reset-password"
+                    className="ml-auto text-xs text-indigo-600 hover:underline"
+                  >
+                    パスワードをお忘れですか？
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  {...register("password")}
+                  placeholder="パスワードを入力"
+                  disabled={isSubmitting}
+                />
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password.message}</p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex-col gap-3">
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? "ログイン中..." : "ログイン"}
+            </Button>
+            <Link to="/signup" className="text-sm text-indigo-600 hover:underline">
+              アカウントをお持ちでない方はこちら
+            </Link>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   );
 };

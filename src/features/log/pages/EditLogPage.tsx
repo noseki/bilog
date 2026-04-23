@@ -2,13 +2,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useFetchLog } from "../hooks/useLogs";
 import { Button } from "@/components/ui/button";
 import { LogForm } from "../components/LogForm";
+import { SpinnerCustom } from "@/components/ui/spinner";
 
 export const EditLogPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isError } = useFetchLog(id!);
 
-  if (isLoading) return <p className="p-4 text-gray-500">読み込み中...</p>;
+  if (isLoading) return <SpinnerCustom />;
   if (isError || !data)
     return <p className="p-4 text-red-500">データの取得に失敗しました</p>;
 
