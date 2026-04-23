@@ -7,11 +7,15 @@ import {
   formatFullDate,
 } from "@/features/log/utils/log";
 import { Link } from "react-router-dom";
+import { SpinnerCustom } from "@/components/ui/spinner";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+import { ImageIcon, PlusIcon } from "lucide-react";
 
 export const CategoryPhotoTimeline = () => {
   const { data: logs, isLoading, isError } = useFetchLogsWithAfterPhotos();
 
-  if (isLoading) return <p className="p-4 text-gray-500">読み込み中...</p>;
+  if (isLoading) return <SpinnerCustom />;
   if (isError || !logs)
     return <p className="p-4 text-red-500">データの取得に失敗しました</p>;
 
@@ -29,9 +33,25 @@ export const CategoryPhotoTimeline = () => {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm">美容履歴（直近10件）</p>
+      <p className="text-sm font-bold">美容履歴（直近10件）</p>
       {categoryGroups.length === 0 ? (
-        <p>まだ写真がありません</p>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ImageIcon className="w-6 h-6" />
+            </EmptyMedia>
+            <EmptyTitle>写真がありません</EmptyTitle>
+            <EmptyDescription>実施後の写真付きの記録を追加すると、ここに表示されます</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button asChild>
+              <Link to="/log-timeline/add">
+                <PlusIcon />
+                記録する
+              </Link>
+            </Button>
+          </EmptyContent>
+        </Empty>
       ) : (
         categoryGroups.map(({ category, categoryLogs }) => (
           <section key={category}>

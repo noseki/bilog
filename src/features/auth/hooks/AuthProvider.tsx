@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { AuthContext } from "./useAuth";
+import { SpinnerCustom } from "@/components/ui/spinner";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
@@ -18,8 +19,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // TODO: LoadingSpinnerにする
-  if (loading) return null;
+  if (loading) return <SpinnerCustom />;
 
   return (
     <AuthContext.Provider value={session}>{children}</AuthContext.Provider>

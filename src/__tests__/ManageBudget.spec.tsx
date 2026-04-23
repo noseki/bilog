@@ -102,7 +102,7 @@ describe("ManageBudget", () => {
 
     test("記録がない場合にメッセージが表示されること", async () => {
         render(<ManageBudgetPage />);
-        const message = await screen.findByText("まだ記録がありません");
+        const message = await screen.findByText("予算が登録されていません");
         expect(message).toBeInTheDocument();
     });
 

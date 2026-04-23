@@ -15,6 +15,7 @@ import { useDeleteLog, useFetchLog } from "../hooks/useLogs";
 import { formatFullDate } from "../utils/log";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { SpinnerCustom } from "@/components/ui/spinner";
 
 export const LogDetailPage = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export const LogDetailPage = () => {
     navigate("/log-timeline");
   };
 
-  if (isLoading) return <p className="p-4 text-gray-500">読み込み中...</p>;
+  if (isLoading) return <SpinnerCustom />;
   if (isError || !log)
     return <p className="p-4 text-red-500">データの取得に失敗しました</p>;
 
@@ -104,7 +105,7 @@ export const LogDetailPage = () => {
                 </div>
               ) : (
                 // 写真が片方しかない場合
-                <div className="max-w-[180px] mx-auto">
+                <div className="mx-auto">
                   <PhotoSlot
                     src={(log.before_photo_url ?? log.after_photo_url)!}
                     label={hasBeforePhoto ? "Before" : "After"}
