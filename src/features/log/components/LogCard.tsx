@@ -14,11 +14,11 @@ export const LogCard = ({ log }: { log: Log }) => {
   return (
     <Link to={`/log-timeline/${log.id}`}>
       <Card key={log.id} className="relative mx-auto my-4 w-full max-w-sm pt-0">
-        <CardContent className="flex items-center gap-3 py-3">
+        <CardContent className="flex items-start gap-3 py-3">
           {/* カテゴリバッジ */}
           <span
             className={cn(
-              "rounded-full px-2 py-1 text-xs font-medium",
+              "shrink-0 w-14 text-center rounded-full px-2 py-1 text-xs font-medium",
               CATEGORY_COLOR[log.category],
             )}
           >

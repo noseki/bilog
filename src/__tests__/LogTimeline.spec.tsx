@@ -70,7 +70,7 @@ describe("LogTimeline", () => {
     render(<LogTimelinePage />); //データをセットしてからレンダリング
 
     expect(await screen.findByText("テストタイトル")).toBeInTheDocument();
-    expect(screen.getByText("ネイル")).toBeInTheDocument();
+    expect(screen.getAllByText("ネイル").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("test salon")).toBeInTheDocument();
     expect(screen.getByText("担当者：テスト花子さん")).toBeInTheDocument();
     expect(screen.getByText("4/1")).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe("LogTimeline", () => {
 
   test("記録がない場合にメッセージが表示されること", async () => {
     render(<LogTimelinePage />);
-    const message = await screen.findByText("まだ記録がありません");
+    const message = await screen.findByText("記録がありません");
     expect(message).toBeInTheDocument();
   });
 });

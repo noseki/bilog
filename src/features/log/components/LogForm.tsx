@@ -30,6 +30,7 @@ import { CATEGORY_LABEL } from "@/features/log/utils/log";
 import { useCreateLog, useUpdateLog } from "../hooks/useLogs";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/client";
+import { useGetImageUrl } from "../hooks/useGetImageUrl";
 
 // 画像をsupabase storageにアップロードする
 async function uploadImage(
@@ -66,6 +67,8 @@ export const LogForm = ({
 }: LogFormProps) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [imageBeforePhotoFile, setImageBeforePhotoFile] = useState<File | null>(null);
+  const [imageAfterPhotoFile, setImageAfterPhotoFile] = useState<File | null>(null);
   const createMutation = useCreateLog();
   const updateMutation = useUpdateLog();
 
@@ -85,6 +88,9 @@ export const LogForm = ({
       staff_name: null,
     },
   });
+
+  const { imageUrl: imageBeforePhotoUrl } = useGetImageUrl({ file: imageBeforePhotoFile });
+  const { imageUrl: imageAfterPhotoUrl } = useGetImageUrl({ file: imageAfterPhotoFile });
 
   const onSubmit = async (data: LogValues) => {
     try {
@@ -292,6 +298,9 @@ export const LogForm = ({
                     onChange={(event) => {
                       field.onChange(event.target.files);
                       trigger(field.name);
+                      if (event.target.files && event.target.files[0]) {
+                        setImageBeforePhotoFile(event.target.files[0]);
+                      }
                     }}
                   />
                   {fieldState.invalid && (
@@ -300,10 +309,10 @@ export const LogForm = ({
                 </Field>
               )}
             />
-            {existingBeforePhotoUrl && (
-              <div className="relative aspect-[3/4] overflow-hidden">
+            {(imageBeforePhotoUrl || existingBeforePhotoUrl) && (
+              <div className="relative aspect-[3/4] w-[180px] mx-auto overflow-hidden">
                 <img
-                  src={existingBeforePhotoUrl}
+                  src={imageBeforePhotoUrl || existingBeforePhotoUrl!}
                   alt="実施前の写真"
                   className="w-full h-full object-cover"
                 />
@@ -326,6 +335,9 @@ export const LogForm = ({
                     onChange={(event) => {
                       field.onChange(event.target.files);
                       trigger(field.name);
+                      if (event.target.files && event.target.files[0]) {
+                        setImageAfterPhotoFile(event.target.files[0]);
+                      }
                     }}
                   />
                   {fieldState.invalid && (
@@ -334,10 +346,10 @@ export const LogForm = ({
                 </Field>
               )}
             />
-            {existingAfterPhotoUrl && (
-              <div className="relative aspect-[3/4] overflow-hidden">
+            {(imageAfterPhotoUrl || existingAfterPhotoUrl) && (
+              <div className="relative aspect-[3/4]  w-[180px] mx-auto overflow-hidden">
                 <img
-                  src={existingAfterPhotoUrl}
+                  src={imageAfterPhotoUrl || existingAfterPhotoUrl!}
                   alt="実施後の写真"
                   className="w-full h-full object-cover"
                 />

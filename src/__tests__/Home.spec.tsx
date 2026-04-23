@@ -176,7 +176,7 @@ describe("Home", () => {
 
   test("美容履歴で写真がない場合にメッセージが表示されること", async () => {
     render(<HomePage />);
-    const message = await screen.findByText("まだ写真がありません");
+    const message = await screen.findByText("写真がありません");
     expect(message).toBeInTheDocument();
   });
 });

@@ -40,13 +40,27 @@ export const BudgetSummary = () => {
     }))
     .sort((a, b) => b.value - a.value);
 
+    // 予算超過トースト表示
     useEffect(() => {
-        if (isOver) {
-            toast.warning(`今月の予算を¥${Math.abs(remaining).toLocaleString()}超過しています`, {
-                id: "budget-over",
-            });
+        if (!budget) return;
+
+        const storageKey = `budget-notified-${currentMonth}`;
+
+        if (!isOver) {
+            // 予算超過が解消されたらsessionStorageから削除（次に超過したら再度通知）
+            sessionStorage.removeItem(storageKey);
+            return;
         }
-    }, [isOver, remaining]);
+
+        const notifiedValue = sessionStorage.getItem(storageKey);
+        if (notifiedValue === String(remaining)) return; // 超過&remainingが前回通知と同じ場合
+
+        // 超過&remainingが変化した場合にトースト表示し、sessionStorage更新
+        toast.warning(`今月の予算を¥${Math.abs(remaining).toLocaleString()}超過しています`, {
+            id: "budget-over",
+        });
+        sessionStorage.setItem(storageKey, String(remaining));
+    }, [isOver, remaining, budget, currentMonth]);
 
     if (budgetLoading || logsLoading) {
         return (
@@ -84,11 +98,11 @@ export const BudgetSummary = () => {
                             <p className="text-xs text-muted-foreground mb-0.5">予算額</p>
                             <p className="font-medium">¥{budget.amount.toLocaleString()}</p>
                         </div>
-                        <div className="text-right">
+                        <div>
                             <p className="text-xs text-muted-foreground mb-0.5">使用額</p>
                             <p className="font-medium">¥{usedAmount.toLocaleString()}</p>
                         </div>
-                        <div className="text-right">
+                        <div>
                             <p className="text-xs text-muted-foreground mb-0.5">残り</p>
                             <p className={`font-medium flex items-center justify-end gap-1 ${isOver ? "text-red-500" : ""}`}>
                                 {isOver && <AlertTriangle className="w-3.5 h-3.5" />}
