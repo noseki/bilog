@@ -31,6 +31,8 @@ import { useCreateLog, useUpdateLog } from "../hooks/useLogs";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase/client";
 import { useGetImageUrl } from "../hooks/useGetImageUrl";
+import AsyncCreatableSelect from 'react-select/async-creatable';
+import { cn } from "@/lib/utils";
 
 // 画像をsupabase storageにアップロードする
 async function uploadImage(
@@ -53,8 +55,10 @@ async function uploadImage(
 type LogFormProps = {
   defaultValues?: Partial<LogValues>; // 編集時のみ渡す
   logId?: string; // 編集時のみ渡す
-  existingBeforePhotoUrl?: string | null;
-  existingAfterPhotoUrl?: string | null;
+  existingBeforePhotoUrl?: string | null; // 表示用 signed URL
+  existingAfterPhotoUrl?: string | null;  // 表示用 signed URL
+  existingBeforePhotoPath?: string | null; // 保存用の生パス
+  existingAfterPhotoPath?: string | null;  // 保存用の生パス
   isEdit?: boolean;
 };
 
@@ -63,6 +67,8 @@ export const LogForm = ({
   logId,
   existingBeforePhotoUrl,
   existingAfterPhotoUrl,
+  existingBeforePhotoPath,
+  existingAfterPhotoPath,
   isEdit,
 }: LogFormProps) => {
   const navigate = useNavigate();
@@ -92,6 +98,48 @@ export const LogForm = ({
   const { imageUrl: imageBeforePhotoUrl } = useGetImageUrl({ file: imageBeforePhotoFile });
   const { imageUrl: imageAfterPhotoUrl } = useGetImageUrl({ file: imageAfterPhotoFile });
 
+  const loadSalonOptions = async (inputValue: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    let query = supabase
+      .from('salons')
+      .select('name')
+      .eq('user_id', user.id)
+      .limit(20);
+
+    if (inputValue) {
+      query = query.ilike('name', `%${inputValue}%`);
+    }
+
+    const { data, error } = await query;
+    if (error || !data) return [];
+
+    const unique = [...new Set(data.map((d) => d.name as string))];
+    return unique.map((name) => ({ value: name, label: name }));
+  };
+
+  const loadStaffOptions = async (inputValue: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+
+    let query = supabase
+      .from('staffs')
+      .select('name')
+      .eq('user_id', user.id)
+      .limit(20);
+
+    if (inputValue) {
+      query = query.ilike('name', `%${inputValue}%`);
+    }
+
+    const { data, error } = await query;
+    if (error || !data) return [];
+
+    const unique = [...new Set(data.map((d) => d.name as string))];
+    return unique.map((name) => ({ value: name, label: name }));
+  };
+
   const onSubmit = async (data: LogValues) => {
     try {
       setError("");
@@ -104,10 +152,10 @@ export const LogForm = ({
       const [beforeUrl, afterUrl] = await Promise.all([
         data.before_photo_url?.[0]
           ? uploadImage(data.before_photo_url[0], user.id, "before")
-          : Promise.resolve(existingBeforePhotoUrl ?? null), // 新規ファイルがなければ既存pathを保持
+          : Promise.resolve(existingBeforePhotoPath ?? null), // 新規ファイルがなければ既存パスを保持
         data.after_photo_url?.[0]
           ? uploadImage(data.after_photo_url[0], user.id, "after")
-          : Promise.resolve(existingAfterPhotoUrl ?? null),
+          : Promise.resolve(existingAfterPhotoPath ?? null),
       ]);
       // mutateAsync()はasync/await形式(try/catchでエラーハンドリングしたいのでmutateAsync使用)
       if (logId) {
@@ -355,34 +403,88 @@ export const LogForm = ({
                 />
               </div>
             )}
-            {/* 店舗名（TODO:過去のsalon_nameからサジェスト */}
+            {/* 店舗名 */}
             <Controller
               name="salon_name"
               control={control}
               render={({ field }) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>店舗名</FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="text"
-                    {...field}
-                    value={field.value ?? ""}
+                  <AsyncCreatableSelect
+                    inputId={field.name}
+                    value={field.value ? { value: field.value, label: field.value } : null}
+                    onChange={(option) => field.onChange(option?.value ?? null)}
+                    onBlur={field.onBlur}
+                    loadOptions={loadSalonOptions}
+                    defaultOptions
+                    cacheOptions
+                    isClearable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    placeholder="店舗名を入力または選択"
+                    formatCreateLabel={(input) => `「${input}」を追加`}
+                    noOptionsMessage={() => "候補がありません"}
+                    unstyled
+                    classNames={{
+                      control: ({ isFocused }) =>
+                        cn(
+                          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+                          isFocused && "outline-none ring-2 ring-ring ring-offset-2",
+                        ),
+                      placeholder: () => "text-muted-foreground text-sm",
+                      input: () => "text-sm",
+                      menuPortal: () => "z-50",
+                      menu: () => "rounded-md border border-input bg-background shadow-md",
+                      option: ({ isFocused }) =>
+                        cn("px-3 py-2 text-sm cursor-pointer", isFocused && "bg-accent"),
+                      singleValue: () => "text-sm",
+                      clearIndicator: () => "text-muted-foreground hover:text-foreground cursor-pointer px-1",
+                      indicatorSeparator: () => "hidden",
+                      dropdownIndicator: () => "hidden",
+                    }}
                   />
                 </Field>
               )}
             />
-            {/* 担当者名（TODO:過去のstaff_nameからサジェスト */}
+            {/* 担当者名 */}
             <Controller
               name="staff_name"
               control={control}
               render={({ field }) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>担当者名</FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="text"
-                    {...field}
-                    value={field.value ?? ""}
+                  <AsyncCreatableSelect
+                    inputId={field.name}
+                    value={field.value ? { value: field.value, label: field.value } : null}
+                    onChange={(option) => field.onChange(option?.value ?? null)}
+                    onBlur={field.onBlur}
+                    loadOptions={loadStaffOptions}
+                    defaultOptions
+                    cacheOptions
+                    isClearable
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    placeholder="担当者名を入力または選択"
+                    formatCreateLabel={(input) => `「${input}」を追加`}
+                    noOptionsMessage={() => "候補がありません"}
+                    unstyled
+                    classNames={{
+                      control: ({ isFocused }) =>
+                        cn(
+                          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
+                          isFocused && "outline-none ring-2 ring-ring ring-offset-2",
+                        ),
+                      placeholder: () => "text-muted-foreground text-sm",
+                      input: () => "text-sm",
+                      menuPortal: () => "z-50",
+                      menu: () => "rounded-md border border-input bg-background shadow-md",
+                      option: ({ isFocused }) =>
+                        cn("px-3 py-2 text-sm cursor-pointer", isFocused && "bg-accent"),
+                      singleValue: () => "text-sm",
+                      clearIndicator: () => "text-muted-foreground hover:text-foreground cursor-pointer px-1",
+                      indicatorSeparator: () => "hidden",
+                      dropdownIndicator: () => "hidden",
+                    }}
                   />
                 </Field>
               )}

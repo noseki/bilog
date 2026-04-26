@@ -27,7 +27,7 @@ export const BudgetCard = ({ budget }: { budget: Budget }) => {
 
     return (
         <Card className="relative mx-auto my-4 w-full max-w-sm pt-0">
-            <CardContent className="flex items-center gap-3 py-3">
+            <CardContent className="flex items-center gap-3 pt-3">
                 <div className="flex-1 min-w-0 space-y-2">
                     <div>
                         <p className="text-xs text-muted-foreground mb-0.5">予算額</p>

@@ -35,6 +35,8 @@ export const EditLogPage = () => {
         logId={data.id}
         existingBeforePhotoUrl={data.before_photo_url}
         existingAfterPhotoUrl={data.after_photo_url}
+        existingBeforePhotoPath={data.before_photo_path}
+        existingAfterPhotoPath={data.after_photo_path}
         isEdit
       />
     </div>
