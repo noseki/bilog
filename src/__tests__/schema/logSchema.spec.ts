@@ -53,12 +53,12 @@ describe("logSchema", () => {
         expect(result.error?.issues[0].message).toBe("実施日を入力してください");
     });
 
-    test("画像サイズが5MB超でエラーになる", () => {
+    test("画像サイズが10MB超でエラーになる", () => {
         const file = new File(["x"], "photo.jpg", { type: "image/jpeg" });
-        Object.defineProperty(file, "size", { value: 6 * 1024 * 1024 });
+        Object.defineProperty(file, "size", { value:  11 * 1024 * 1024 });
         const result = logSchema.safeParse({ ...validBase, before_photo_url: createFileList([file]) });
         expect(result.success).toBe(false);
-        expect(result.error?.issues[0].message).toBe("ファイルサイズは最大5MBです");
+        expect(result.error?.issues[0].message).toBe("ファイルサイズは最大10MBです");
     });
 
     test("非画像ファイルでエラーになる", () => {
