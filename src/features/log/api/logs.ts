@@ -131,12 +131,21 @@ export const fetchLog = async (id: string) => {
 
   if (error) throw new Error(`fetchLog error: ${error.message}`);
 
+  const beforePath = data.before_photo_url;
+  const afterPath = data.after_photo_url;
+
   // 表示用に新鮮なsignedURL（1時間有効）を生成して上書き
   const [before, after] = await Promise.all([
-    toSignedUrl(data.before_photo_url),
-    toSignedUrl(data.after_photo_url),
+    toSignedUrl(beforePath),
+    toSignedUrl(afterPath),
   ]);
-  return { ...data, before_photo_url: before, after_photo_url: after };
+  return {
+    ...data,
+    before_photo_url: before,    // 表示用 signed URL
+    after_photo_url: after,       // 表示用 signed URL
+    before_photo_path: beforePath, // 保存用の生パス
+    after_photo_path: afterPath,   // 保存用の生パス
+  };
 };
 
 export const deleteLog = async (id: string) => {
