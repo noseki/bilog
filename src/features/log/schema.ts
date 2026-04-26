@@ -17,7 +17,7 @@ export const logSchema = z.object({
     before_photo_url: z.instanceof(FileList)
         .optional()
         .refine((files) => !files || files.length === 0 || sizeInMB(files[0].size) <= MAX_IMAGE_SIZE,
-            { message: 'ファイルサイズは最大5MBです' }
+            { message: 'ファイルサイズは最大10MBです' }
         )
         .refine(
             (files) => !files || files.length === 0 || files[0].type.startsWith("image/"),

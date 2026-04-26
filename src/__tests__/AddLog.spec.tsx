@@ -58,7 +58,7 @@ describe("AddLog", () => {
   test("全項目入力して登録ボタンを押すと/log-timelineに遷移する", async () => {
     render(<AddLogPage />);
 
-    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("combobox", { name: /カテゴリー/ }));
     await user.click(screen.getByRole("option", { name: "ヘア" }));
 
     await user.type(screen.getByLabelText(/タイトル/), "テストヘア");
@@ -101,7 +101,7 @@ describe("AddLog", () => {
   test("必須項目を入力しなくても登録ボタンを押すと登録できて/log-timelineに遷移する", async () => {
     render(<AddLogPage />);
 
-    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("combobox", { name: /カテゴリー/ }));
     await user.click(screen.getByRole("option", { name: "ヘア" }));
 
     await user.type(screen.getByLabelText(/タイトル/), "テストヘア");
@@ -125,7 +125,7 @@ describe("AddLog", () => {
       mockCreateLog.mockRejectedValue(new Error(""));
       render(<AddLogPage />);
 
-      await user.click(screen.getByRole("combobox"));
+      await user.click(screen.getByRole("combobox", { name: /カテゴリー/ }));
       await user.click(screen.getByRole("option", { name: "ヘア" }));
 
       await user.type(screen.getByLabelText(/タイトル/), "テストヘア");
