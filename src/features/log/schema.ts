@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const MAX_IMAGE_SIZE = 5; // 5MB
+const MAX_IMAGE_SIZE = 10; // 10MB
 
 // バイト単位のサイズをメガバイト単位に変換する
 const sizeInMB = (sizeInBytes: number, decimalsNum = 2) => {
