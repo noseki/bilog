@@ -34,10 +34,10 @@ export const ResetPasswordPage = () => {
             redirectTo: `${window.location.origin}/update-password`,
         });
         if (error) throw new Error();
-        setIsComplete(true);
+            setIsComplete(true);
         } catch (error) {
-        console.error(`ResetPasswordPage onSubmit Error: ${error}`);
-        setError("メールの送信に失敗しました。再度お試しください。");
+            console.error(`ResetPasswordPage onSubmit Error: ${error}`);
+            setError("メールの送信に失敗しました。再度お試しください。");
         }
     };
 
