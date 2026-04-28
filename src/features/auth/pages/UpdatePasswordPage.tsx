@@ -33,12 +33,17 @@ export const UpdatePasswordPage = () => {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) {
         console.log(error);
-        throw new Error();
+        throw error;
       }
       navigate("/login", { state: { referrer: "login" } });
     } catch (error) {
       console.error(`UpdatePasswordPage onSubmit Error: ${error}`);
-      setError("パスワードの更新に失敗しました。再度お試しください。");
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes("same password") || message.includes("different from the old password")) {
+        setError("以前と同じパスワードは使用できません。別のパスワードを設定してください。");
+      } else {
+        setError("パスワードの更新に失敗しました。再度お試しください。");
+      }
     }
   };
 
