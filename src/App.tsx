@@ -22,10 +22,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// ログイン済みならhomeへリダイレクト
+// ログイン済みならhomeへリダイレクト（パスワード再設定中はスキップ）
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const session = useAuth();
-  if (session) return <Navigate to="/home" replace />;
+  const isRecoveryMode = localStorage.getItem("bilog:recoveryMode") === "true";
+  if (session && !isRecoveryMode) return <Navigate to="/home" replace />;
   return <>{children}</>;
 };
 

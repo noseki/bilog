@@ -10,6 +10,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        // 全タブ共有のフラグを立ててパスワード再設定中であることを示す
+        localStorage.setItem("bilog:recoveryMode", "true");
+      }
+      if (event === "USER_UPDATED") {
+        localStorage.removeItem("bilog:recoveryMode");
+      }
       setSession(session);
       if (event === "INITIAL_SESSION") {
         setLoading(false);
