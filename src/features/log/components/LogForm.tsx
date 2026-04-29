@@ -98,6 +98,7 @@ export const LogForm = ({
   const { imageUrl: imageBeforePhotoUrl } = useGetImageUrl({ file: imageBeforePhotoFile });
   const { imageUrl: imageAfterPhotoUrl } = useGetImageUrl({ file: imageAfterPhotoFile });
 
+  // salonsテーブルに存在する店舗名を取得してセレクトの候補にする（スタッフ名も同様）
   const loadSalonOptions = async (inputValue: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];

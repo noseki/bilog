@@ -15,20 +15,29 @@ vi.mock("react-router-dom", async () => {
 });
 
 // テスト用のダミーユーザーを返す
-vi.mock("@/lib/supabase/client", () => ({
-  supabase: {
-    auth: {
-      getUser: vi.fn().mockResolvedValue({
-        data: { user: { id: "test-user-id" } },
-      }),
+vi.mock("@/lib/supabase/client", () => {
+  const mockQueryBuilder = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    ilike: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+  };
+  return {
+    supabase: {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: { user: { id: "test-user-id" } },
+        }),
+      },
+      from: vi.fn().mockReturnValue(mockQueryBuilder),
+      storage: {
+        from: vi.fn().mockReturnValue({
+          upload: vi.fn().mockResolvedValue({ error: null }),
+        }),
+      },
     },
-    storage: {
-      from: vi.fn().mockReturnValue({
-        upload: vi.fn().mockResolvedValue({ error: null }),
-      }),
-    },
-  },
-}));
+  };
+});
 
 const baseMockLog = {
   after_photo_url: null,
