@@ -116,5 +116,3 @@ describe('updatePasswordSchema', () => {
         expect(result.error?.issues[0].message).toBe("パスワードが一致しません");
     });
 });
-
-
