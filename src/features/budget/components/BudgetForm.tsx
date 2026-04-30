@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,13 +13,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useCreateBudget, useUpdateBudget } from "../hooks/useBudgets";
-
-const budgetSchema = z.object({
-    year_month: z.string().min(1, { message: "年月を選択してください" }),
-    amount: z.number().int('整数で入力してください').min(0, { message: "0以上の金額を入力してください" }),
-});
-
-export type budgetValues = z.infer<typeof budgetSchema>;
+import { budgetSchema, type budgetValues } from "../schema";
 
 type budgetFormProps = {
     defaultValues?: Partial<budgetValues>; // 編集時のみ渡す
@@ -41,12 +34,12 @@ export const BudgetForm = ({
     const {
         control,
         handleSubmit,
+        trigger,
         formState: { isSubmitting },
     } = useForm<budgetValues>({
         resolver: zodResolver(budgetSchema),
         defaultValues: defaultValues ?? {
             year_month: "",
-            amount: 0,
         },
     });
 
@@ -75,7 +68,7 @@ export const BudgetForm = ({
         } catch (e) {
             const message = e instanceof Error ? e.message : String(e);
             if (message === "DUPLICATE_YEAR_MONTH") {
-                setError("この年月の予算は既に登録されています");
+                setError("この年月の予算は既に設定されています");
             } else {
                 console.error("onSubmit error:", message);
                 setError("保存に失敗しました。入力内容を確認してください。");
@@ -84,10 +77,17 @@ export const BudgetForm = ({
     };
 
     return (
-        <Card className="relative my-8 mx-auto w-full max-w-sm">
-            <form onSubmit={handleSubmit(onSubmit)}>
+        <Card className="relative my-2 mx-auto w-full max-w-sm">
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
+                        e.preventDefault();
+                    }
+                    }}
+                >
                 <CardHeader className="mb-4">
-                <CardTitle>{isEdit ? "記録編集" : "記録追加"}</CardTitle>
+                <CardTitle>{isEdit ? "予算編集" : "予算設定"}</CardTitle>
                 {error && <div className="text-red-500">{error}</div>}
                 </CardHeader>
                 <CardContent>
@@ -107,6 +107,11 @@ export const BudgetForm = ({
                                 {...field}
                                 aria-invalid={fieldState.invalid}
                                 disabled={isEdit}
+                                className="w-full appearance-none md:[appearance:auto]"
+                                onChange={(event) => {
+                                    field.onChange(event.target.value);
+                                    trigger(field.name);
+                                }}
                             />
                             {fieldState.invalid && (
                                 <FieldError errors={[fieldState.error]} />
@@ -128,11 +133,12 @@ export const BudgetForm = ({
                                     type="text"
                                     inputMode="numeric"
                                     {...field}
-                                    value={Number(field.value).toLocaleString("ja-JP")}
+                                    value={isNaN(field.value) ? "" : Number(field.value).toLocaleString("ja-JP")}
                                     onChange={(event) => {
                                         const raw = event.target.value.replace(/,/g, "");
                                         const num = parseInt(raw, 10);
-                                        field.onChange(isNaN(num) ? 0 : num);
+                                        field.onChange(isNaN(num) ? NaN : num);
+                                        trigger(field.name);
                                     }}
                                     aria-invalid={fieldState.invalid}
                                 />
@@ -142,14 +148,14 @@ export const BudgetForm = ({
                                 </Field>
                             )}
                         />
-                        <Button type="submit">
+                        <Button type="submit" className="py-4">
                             {isSubmitting
                                 ? isEdit
                                 ? "更新中..."
-                                : "追加中..."
+                                : "設定中..."
                                 : isEdit
-                                ? "記録を更新する"
-                                : "記録を追加する"}
+                                ? "予算を更新する"
+                                : "予算を設定する"}
                         </Button>
                     </FieldGroup>
                 </CardContent>

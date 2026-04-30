@@ -148,9 +148,9 @@ describe("Home", () => {
     const actualOrder = items.map((item) => item.textContent);
 
     expect(actualOrder).toEqual([
-      `${formatFullDate("2026-03-01")}テストタイトル1`,
-      `${formatFullDate("2026-03-01")}テストタイトル2`,
-      `${formatFullDate("2026-04-01")}テストタイトル3`,
+      `テストタイトル1${formatFullDate("2026-03-01")}`,
+      `テストタイトル2${formatFullDate("2026-03-01")}`,
+      `テストタイトル3${formatFullDate("2026-04-01")}`,
     ]);
   });
 

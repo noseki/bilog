@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "../ui/button";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -17,7 +17,9 @@ export const Layout = () => {
   const session = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const onLogout = useCallback(async () => {
+  const onLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (!window.confirm("ログアウトしてもよろしいですか？")) return;
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw new Error(error.message);
@@ -25,7 +27,7 @@ export const Layout = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [navigate]);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,24 +93,21 @@ export const Layout = () => {
 
               {/* ナビゲーション（デスクトップのみ） */}
               <nav className="hidden md:flex space-x-8 ml-8">
-                <Link
-                  to="/home"
-                  className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
-                >
-                  ホーム
-                </Link>
-                <Link
-                  to="/log-timeline"
-                  className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
-                >
-                  記録一覧
-                </Link>
-                <Link
-                  to="/manage-budget"
-                  className="text-gray-600 hover:text-indigo-600 font-medium transition-colors"
-                >
-                  予算管理
-                </Link>
+                {navigation.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `font-medium transition-colors pb-1 ${
+                        isActive
+                          ? "text-indigo-600 border-b-2 border-indigo-600"
+                          : "text-gray-600 hover:text-indigo-600"
+                      }`
+                    }
+                  >
+                    {item.name}
+                  </NavLink>
+                ))}
               </nav>
             </div>
 

@@ -20,6 +20,7 @@ vi.mock("@/lib/supabase/client", () => {
     eq: vi.fn().mockReturnThis(),
     ilike: vi.fn().mockReturnThis(),
     limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
   };
   return {
     supabase: {
@@ -96,14 +97,14 @@ describe("AddLog", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/log-timeline");
   });
 
-  test("必須項目(カテゴリー/タイトル/実施日)を入力しないとエラーがでる", async () => {
+  test("必須項目(カテゴリー/タイトル/金額/実施日)を入力しないとエラーがでる", async () => {
     render(<AddLogPage />);
 
     await user.click(screen.getByRole("button", { name: "記録を追加する" }));
 
-    // 金額はデフォルト値が0なのでエラーは出ない
     expect(await screen.findByText("カテゴリーを選択してください")).toBeInTheDocument();
     expect(await screen.findByText("タイトルを入力してください")).toBeInTheDocument();
+    expect(await screen.findByText("金額を入力してください")).toBeInTheDocument();
     expect(await screen.findByText("実施日を入力してください")).toBeInTheDocument();
   });
 

@@ -16,6 +16,8 @@ import { formatFullDate } from "../utils/log";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { SpinnerCustom } from "@/components/ui/spinner";
+import { MapPin } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 
 export const LogDetailPage = () => {
   const navigate = useNavigate();
@@ -28,9 +30,15 @@ export const LogDetailPage = () => {
   const deleteMutation = useDeleteLog();
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm(`記録を削除しますか？`)) return;
-    deleteMutation.mutate(id);
-    navigate("/log-timeline");
+    try {
+      if (!window.confirm(`記録を削除しますか？`)) return;
+      await deleteMutation.mutateAsync(id);
+      navigate("/log-timeline");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.error("handleDelete error:", message);
+      alert("削除に失敗しました。もう一度お試しください。");
+    }
   };
 
   if (isLoading) return <SpinnerCustom />;
@@ -46,7 +54,7 @@ export const LogDetailPage = () => {
       >
         ← 戻る
       </Button>
-      <Card className="relative mx-auto w-full max-w-sm pt-0">
+      <Card className="relative mx-auto my-2 w-full max-w-sm pt-0">
         <CardContent className="pt-4 pb-6 px-4 space-y-4">
           {/* カテゴリー・タイトル・オプションメニュー */}
           <div className="flex items-center justify-between gap-2">
@@ -99,13 +107,13 @@ export const LogDetailPage = () => {
             <div>
               {hasBeforePhoto && hasAfterPhoto ? (
                 // 写真がbefore/afterどちらもある場合
-                <div className="grid grid-col-2 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <PhotoSlot src={log.before_photo_url!} label="Before" />
                   <PhotoSlot src={log.after_photo_url!} label="After" />
                 </div>
               ) : (
                 // 写真が片方しかない場合
-                <div className="mx-auto">
+                <div className="max-w-[180px] mx-auto">
                   <PhotoSlot
                     src={(log.before_photo_url ?? log.after_photo_url)!}
                     label={hasBeforePhoto ? "Before" : "After"}
@@ -129,10 +137,10 @@ export const LogDetailPage = () => {
           {/* サロン名・担当者名 */}
           {(log.salon_name || log.staff_name) && (
             <div className="space-y-1">
-              {log.salon_name && <p className="text-sm">{log.salon_name}</p>}
+              {log.salon_name && <p className="flex items-center text-sm"><MapPin size={16} color="#615fff" className="mr-1" />{log.salon_name}</p>}
               {log.staff_name && (
-                <p className="text-sm text-muted-foreground">
-                  担当者：{log.staff_name}
+                <p className="flex items-center text-sm">
+                  <UserRound size={16} color="#615fff" className="mr-1" />{log.staff_name}
                 </p>
               )}
             </div>

@@ -7,6 +7,8 @@ import {
 } from "@/features/log/utils/log";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { MapPin } from 'lucide-react';
+import { UserRound } from 'lucide-react';
 
 type Log = Tables<"logs">;
 
@@ -26,16 +28,16 @@ export const LogCard = ({ log }: { log: Log }) => {
           </span>
 
           {/* タイトル・サロン名・担当者名 */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 space-y-1">
             <p className="font-medium truncate">{log.title}</p>
             {log.salon_name && (
-              <p className="text-sm text-muted-foreground truncate">
-                {log.salon_name}
+              <p className="flex items-center text-xs text-muted-foreground truncate">
+                <MapPin size={16} className="mr-1" />{log.salon_name}
               </p>
             )}
             {log.staff_name && (
-              <p className="text-xs text-muted-foreground truncate">
-                担当者：{log.staff_name}
+              <p className="flex items-center text-xs text-muted-foreground truncate">
+                <UserRound size={16} className="mr-1" />{log.staff_name}
               </p>
             )}
           </div>
