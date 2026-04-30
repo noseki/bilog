@@ -20,7 +20,7 @@ export const BudgetCard = ({ budget }: { budget: Budget }) => {
     const deleteMutation = useDeleteBudget();
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm(`記録を削除しますか？`)) return;
+        if (!window.confirm(`予算を削除しますか？`)) return;
         deleteMutation.mutate(id);
         navigate("/manage-budget");
     };

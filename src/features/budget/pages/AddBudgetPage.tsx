@@ -9,7 +9,12 @@ export const AddBudgetPage = () => {
         <div className="mx-auto w-full max-w-sm">
             <Button
                 variant="ghost"
-                onClick={() => navigate(-1)}
+                onClick={e => {
+                    e.preventDefault();
+                    if (window.confirm("編集中の内容は保存されませんが、よろしいですか？")) {
+                        navigate(-1);
+                    }
+                }}
                 className="text-sm mb-2"
             >
                 ← 戻る

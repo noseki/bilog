@@ -12,7 +12,7 @@ export const logSchema = z.object({
     category: z.string().min(1, { message: "カテゴリーを選択してください" }),
     title: z.string().min(1, { message: "タイトルを入力してください" }).max(50, '50文字以内で入力してください'),
     detail: z.string().max(200, '200文字以内で入力してください').nullable(),
-    cost: z.number().int('整数で入力してください').min(0, { message: "0以上の金額を入力してください" }),
+    cost: z.number({ error: "金額を入力してください" }).int('整数で入力してください').min(0, { message: "0以上の金額を入力してください" }),
     done_at: z.date({ message: "実施日を入力してください" }),
     before_photo_url: z.instanceof(FileList)
         .optional()
@@ -34,6 +34,14 @@ export const logSchema = z.object({
         ),
     salon_name: z.string().max(50, '50文字以内で入力してください').nullable(),
     staff_name: z.string().max(50, '50文字以内で入力してください').nullable(),
+}).superRefine((data, ctx) => {
+    if (data.staff_name && !data.salon_name) {
+        ctx.addIssue({
+            code: "custom",
+            message: "担当者名を入力する場合は店舗名も入力してください",
+            path: ["staff_name"],
+        });
+    }
 });
 
 export type LogValues = z.infer<typeof logSchema>;

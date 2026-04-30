@@ -21,6 +21,7 @@ vi.mock("@/lib/supabase/client", () => {
     eq: vi.fn().mockReturnThis(),
     ilike: vi.fn().mockReturnThis(),
     limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+    maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
   };
   return {
     supabase: {

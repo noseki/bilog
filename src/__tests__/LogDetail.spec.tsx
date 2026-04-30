@@ -76,7 +76,7 @@ describe("LogDetail", () => {
     expect(screen.getByText("¥1,000")).toBeInTheDocument();
     expect(screen.getByText("テストです")).toBeInTheDocument();
     expect(screen.getByText("test salon")).toBeInTheDocument();
-    expect(screen.getByText("担当者：テスト花子さん")).toBeInTheDocument();
+    expect(screen.getByText("テスト花子さん")).toBeInTheDocument();
   });
 
   test("削除できること", async () => {

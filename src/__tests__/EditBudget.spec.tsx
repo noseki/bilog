@@ -57,10 +57,10 @@ describe("EditBudget", () => {
         mockUpdateBudget.mockResolvedValue(baseMockBudget);
     });
 
-    test("タイトルが「記録編集」であること", async () => {
+    test("タイトルが「予算編集」であること", async () => {
         render(<EditBudgetPage />);
 
-        expect(await screen.findByText("記録編集")).toBeInTheDocument();
+        expect(await screen.findByText("予算編集")).toBeInTheDocument();
     });
 
     test("対象年月に既に記録があり、編集できないこと", async () => {
@@ -78,7 +78,7 @@ describe("EditBudget", () => {
         const amountInput = await screen.findByLabelText(/予算額/);
         await user.clear(amountInput);
         await user.type(amountInput, "20000");
-        await user.click(screen.getByRole("button", { name: "記録を更新する" }));
+        await user.click(screen.getByRole("button", { name: "予算を更新する" }));
 
         await waitFor(() => {
             expect(mockUpdateBudget).toHaveBeenCalledWith(
@@ -97,7 +97,7 @@ describe("EditBudget", () => {
         mockUpdateBudget.mockRejectedValue(new Error(""));
         render(<EditBudgetPage />);
 
-        await user.click(await screen.findByRole("button", { name: "記録を更新する" }));
+        await user.click(await screen.findByRole("button", { name: "予算を更新する" }));
 
         expect(await screen.findByText("保存に失敗しました。入力内容を確認してください。")).toBeInTheDocument();
     });

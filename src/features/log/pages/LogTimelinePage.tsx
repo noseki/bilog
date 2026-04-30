@@ -78,8 +78,17 @@ export const LogTimelinePage = () => {
             <EmptyMedia variant="icon">
               <ClipboardList className="w-6 h-6" />
             </EmptyMedia>
-            <EmptyTitle>記録がありません</EmptyTitle>
-            <EmptyDescription>最初の美容記録を追加しましょう</EmptyDescription>
+            {logs && logs.length > 0 ? (
+              <>
+                <EmptyTitle>選択したカテゴリの記録がありません</EmptyTitle>
+                <EmptyDescription>美容記録を追加しましょう</EmptyDescription>
+              </>
+            ) : (
+              <>
+                <EmptyTitle>記録がありません</EmptyTitle>
+                <EmptyDescription>最初の美容記録を追加しましょう</EmptyDescription>
+              </>
+            )}
           </EmptyHeader>
         </Empty>
       ) : (

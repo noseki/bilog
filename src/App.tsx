@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { HomePage } from "./features/home/pages/HomePage";
 import { ResetPasswordPage } from "./features/auth/pages/ResetPasswordPage";
 import { LoginPage } from "./features/auth/pages/LoginPage";
@@ -30,6 +31,13 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+// 画面変更時にトップ位置へスクロール
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+};
+
 const CatchAll = () => {
   const session = useAuth();
   return <Navigate to={session ? "/home" : "/login"} replace />;
@@ -38,6 +46,7 @@ const CatchAll = () => {
 export const App = () => {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/login"

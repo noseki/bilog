@@ -30,7 +30,7 @@ export const ManageBudgetPage = () => {
                 <Button asChild variant="outline" >
                     <Link to="/manage-budget/add">
                         <PlusIcon />
-                        記録する
+                        設定する
                     </Link>
                 </Button>
             </div>

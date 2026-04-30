@@ -156,11 +156,17 @@ export const deleteLog = async (id: string) => {
 
 // 美容履歴用ログ取得
 export const fetchLogsWithAfterPhotos = async (userId: string) => {
-  const logs = await fetchLogs(userId);
 
   // After写真が存在するログを取得
-  const logsWithPhotos = logs.filter((log) => log.after_photo_url != null);
-  if (logsWithPhotos.length === 0) return logsWithPhotos;
+  const { data:logsWithPhotos, error } = await supabase
+    .from("logs")
+    .select("*")
+    .eq("user_id", userId)
+    .not("after_photo_url", "is", null)
+    .order("done_at", { ascending: false }) // 最新順
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(`fetchLogs error: ${error.message}`);
 
   // After写真のファイルパスから署名URL生成
   const paths = logsWithPhotos.map((log) => log.after_photo_url as string);

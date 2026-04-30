@@ -35,6 +35,12 @@ describe("logSchema", () => {
         expect(result.error?.issues[0].message).toBe("200文字以内で入力してください");
     });
 
+    test("金額が空でエラーになる", () => {
+        const result = logSchema.safeParse({ ...validBase, cost: "" });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe("金額を入力してください");
+    });
+
     test("金額が小数でエラーになる", () => {
         const result = logSchema.safeParse({ ...validBase, cost: 1.5 });
         expect(result.success).toBe(false);
@@ -67,4 +73,22 @@ describe("logSchema", () => {
         expect(result.success).toBe(false);
         expect(result.error?.issues[0].message).toBe("画像ファイル（JPEG・PNG・GIF等）を選択してください");
     });
+
+    test("店舗名が51文字でエラーになる", () => {
+        const result = logSchema.safeParse({ ...validBase, salon_name: "あ".repeat(51) });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe("50文字以内で入力してください");
+    });
+
+    test("担当者名が51文字でエラーになる", () => {
+        const result = logSchema.safeParse({ ...validBase, staff_name: "あ".repeat(51) });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe("50文字以内で入力してください");
+    });
+
+    test("店舗名が空の状態で担当者名のみ入力するとエラーになる", () => {
+        const result = logSchema.safeParse({ ...validBase, staff_name: "test" });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0].message).toBe("担当者名を入力する場合は店舗名も入力してください");
+    })
 });

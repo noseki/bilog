@@ -47,12 +47,22 @@ describe("ResetPasswordPage", () => {
   });
 
   test("送信失敗時にエラーメッセージが表示されること", async () => {
-    mockResetPassword.mockResolvedValue({ error: new Error("Rate limit exceeded") });
+    mockResetPassword.mockResolvedValue({ error: new Error("Something went wrong") });
     render(<ResetPasswordPage />);
 
     await user.type(screen.getByLabelText(/メールアドレス/), "test@example.com");
     await user.click(screen.getByRole("button", { name: "パスワードを再設定する" }));
 
     expect(await screen.findByText("メールの送信に失敗しました。再度お試しください。")).toBeInTheDocument();
+  });
+
+  test("レートリミットエラー時に送信制限メッセージが表示されること", async () => {
+    mockResetPassword.mockResolvedValue({ error: new Error("Email rate limit exceeded") });
+    render(<ResetPasswordPage />);
+
+    await user.type(screen.getByLabelText(/メールアドレス/), "test@example.com");
+    await user.click(screen.getByRole("button", { name: "パスワードを再設定する" }));
+
+    expect(await screen.findByText("メールの送信制限に達しました。しばらく時間をおいてから再度お試しください。")).toBeInTheDocument();
   });
 });
