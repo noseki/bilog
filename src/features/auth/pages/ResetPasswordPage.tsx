@@ -29,15 +29,20 @@ export const ResetPasswordPage = () => {
 
     const onSubmit = async ({ email }: ResetPasswordValues) => {
         try {
-        setError("");
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/update-password`,
-        });
-        if (error) throw new Error();
+            setError("");
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/update-password`,
+            });
+            if (error) throw error;
             setIsComplete(true);
         } catch (error) {
-            console.error(`ResetPasswordPage onSubmit Error: ${error}`);
-            setError("メールの送信に失敗しました。再度お試しください。");
+            console.error("ResetPasswordPage onSubmit Error:", error);
+            const message = error instanceof Error ? error.message : String(error);
+            if (message.toLowerCase().includes("rate limit") || (error as { status?: number })?.status === 429) {
+                setError("メールの送信制限に達しました。しばらく時間をおいてから再度お試しください。");
+            } else {
+                setError("メールの送信に失敗しました。再度お試しください。");
+            }
         }
     };
 
@@ -79,7 +84,7 @@ export const ResetPasswordPage = () => {
                     {error && <p className="text-sm text-red-500">{error}</p>}
                 </CardHeader>
 
-                <CardContent>
+                <CardContent className="mb-4">
                     <div className="grid gap-2">
                     <Label htmlFor="email">メールアドレス</Label>
                     <Input

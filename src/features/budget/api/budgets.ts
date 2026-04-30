@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase/client";
-import type { budgetValues } from '../components/BudgetForm';
+
 import type { Tables } from "@/types/supabase";
+import type { budgetValues } from "../schema";
 
 type Budget = Tables<"budgets">;
 

@@ -14,12 +14,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // 全タブ共有のフラグを立ててパスワード再設定中であることを示す
         localStorage.setItem("bilog:recoveryMode", "true");
       }
-      if (event === "USER_UPDATED") {
+      if (event === "USER_UPDATED" || event === "SIGNED_IN") {
         localStorage.removeItem("bilog:recoveryMode");
       }
       setSession(session);
       if (event === "INITIAL_SESSION") {
-        setLoading(false);
+        setLoading(false)
       }
     });
 

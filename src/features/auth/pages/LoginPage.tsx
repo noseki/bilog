@@ -30,9 +30,9 @@ export const LoginPage = () => {
     try {
       setError("");
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw new Error();
+      if (error) throw error;
     } catch (error) {
-      console.error(`LoginPage onSubmit Error: ${error}`);
+      console.error("LoginPage onSubmit Error:", error);
       setError("メールアドレスまたはパスワードが正しくありません");
     }
   };
@@ -51,7 +51,7 @@ export const LoginPage = () => {
             {error && <p className="text-sm text-red-500">{error}</p>}
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="mb-4">
             <div className="flex flex-col gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">メールアドレス</Label>

@@ -83,10 +83,10 @@ export const CategoryPhotoTimeline = () => {
                       className="h-full w-full object-cover"
                     />
                   </div>
+                  <p className="mt-1 truncate text-xs font-medium">{log.title}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {formatFullDate(log.done_at)}
                   </p>
-                  <p className="truncate text-xs font-medium">{log.title}</p>
                 </Link>
               ))}
             </div>

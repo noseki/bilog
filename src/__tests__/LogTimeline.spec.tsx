@@ -72,7 +72,7 @@ describe("LogTimeline", () => {
     expect(await screen.findByText("テストタイトル")).toBeInTheDocument();
     expect(screen.getAllByText("ネイル").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("test salon")).toBeInTheDocument();
-    expect(screen.getByText("担当者：テスト花子さん")).toBeInTheDocument();
+    expect(screen.getByText("テスト花子さん")).toBeInTheDocument();
     expect(screen.getByText("4/1")).toBeInTheDocument();
     expect(screen.getByText("¥1,000")).toBeInTheDocument();
   });

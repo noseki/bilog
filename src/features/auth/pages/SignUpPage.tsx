@@ -83,7 +83,7 @@ export const SignUpPage = () => {
                 {error && <p className="text-sm text-red-500">{error}</p>}
             </CardHeader>
 
-            <CardContent>
+            <CardContent className="mb-4">
                 <div className="flex flex-col gap-4">
                 <div className="grid gap-2">
                     <Label htmlFor="email">メールアドレス</Label>
